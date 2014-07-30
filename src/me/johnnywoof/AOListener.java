@@ -2,6 +2,7 @@ package me.johnnywoof;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import me.johnnywoof.database.Database;
 import net.md_5.bungee.api.ChatColor;
@@ -19,9 +20,12 @@ public class AOListener implements Listener{
 
 	private Database db;
 	
+	private Pattern pat = null;
+	
 	public AOListener(Database db){
 		
 		this.db = db;
+		this.pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");
 		
 	}
 	
@@ -31,6 +35,24 @@ public class AOListener implements Listener{
 		if(event.isCancelled()){return;}
 		
 		if(!AlwaysOnline.mojangonline){
+			
+			if(event.getConnection().getName().length() > 16){
+				
+				event.setCancelReason("Invalid username. Hacking?");
+				
+				event.setCancelled(true);
+				
+				return;
+				
+			}else if(!this.validate(event.getConnection().getName())){
+				
+				event.setCancelReason("Invalid username. Hacking?");
+				
+				event.setCancelled(true);
+				
+				return;
+				
+			}
 			
 			InitialHandler handler = (InitialHandler) event.getConnection();
 			
@@ -136,5 +158,22 @@ public class AOListener implements Listener{
 		}
 		
 	}
+
+	  /**
+	   * Validate username with regular expression
+	   * @param username username for validation
+	   * @return true valid username, false invalid username
+	   */
+	  public boolean validate(String username){
+		  
+		  if(this.pat == null){
+			  
+			  return true;
+			  
+		  }
+		  
+		  return pat.matcher(username).matches();
+
+	  }
 	
 }
