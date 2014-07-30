@@ -66,18 +66,20 @@ public class AOListener implements Listener{
 				
 				event.setCancelled(true);
 				
-				ProxyServer.getInstance().getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] does not match!");
+				ProxyServer.getInstance().getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] has never connected to this server before!");
 				
 			}else{
 			
 				if(ip.equals(lastip)){
 						
-					ProxyServer.getInstance().getLogger().info("Skipping session login for player " + event.getConnection().getName() + "!");
+					ProxyServer.getInstance().getLogger().info("Skipping session login for player " + event.getConnection().getName() + " [Connected ip: " + ip + ", Last ip: " + lastip + "]!");
 						
 					handler.setOnlineMode(false);
 						
 				}else{
 						
+					ProxyServer.getInstance().getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] does not match their last ip!");
+					
 					handler.setOnlineMode(true);
 						
 					event.setCancelReason("We can't let you in since you're not on the same computer you logged on before!");
