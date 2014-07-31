@@ -1,8 +1,8 @@
 #Welcome to the AlwaysOnline main configuration file!
 
 #
-# 1 = Check the url http://status.mojang.com/check?service=session.minecraft.net to see if they are offline (recommended)
-# 2 = Do a direct ping test to the session servers
+# 1 = Check the url http://status.mojang.com/check?service=session.minecraft.net to see if they are offline
+# 2 = Do a direct ping test to the session servers (not recommended, ping can be unstable)
 # 3 = Use http://xpaw.ru/mcstatus to determine if the session service is down
 #
 session-check-mode: 1

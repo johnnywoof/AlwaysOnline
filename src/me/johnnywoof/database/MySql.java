@@ -10,9 +10,12 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 public class MySql implements Database{
 
@@ -20,16 +23,38 @@ public class MySql implements Database{
 	
 	private Statement st = null;
 	
+	private File config = null;
+	
 	@Override
 	public void init(File config) {
 		
+		this.config = config;
+		
 		try {
 			
-			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(config);
+			if(this.st != null){
+				
+				try{
+				
+					if(!st.isClosed()){
+						
+						st.close();
+						
+					}
+					
+				}catch(SQLException ex){
+					
+					ProxyServer.getInstance().getLogger().warning("[AlwaysOnline] Failed to cleanly close connection to database! [" + ex.getMessage() + "]");
+					
+				}
+				
+			}
 			
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(config);//Why is this aint in the javadocs?
 			
-		    Connection conn = DriverManager.getConnection("jdbc:mysql://" + yml.getString("host") + ":" + yml.getInt("port") + "/" + yml.getString("database-name") + "?autoReconnect=true&useUnicode=yes", yml.getString("database-username"), yml.getString("database-password"));  
+			Class.forName("com.mysql.jdbc.Driver").newInstance();//Maybe I should test to see if I really need to this on every connection
+			
+		    Connection conn = DriverManager.getConnection("jdbc:mysql://" + yml.getString("host") + ":" + yml.getInt("port") + "/" + yml.getString("database-name"), yml.getString("database-username"), yml.getString("database-password"));  
 		   
 		    this.st = conn.createStatement();
 		    
@@ -79,6 +104,12 @@ public class MySql implements Database{
 				
 				return n;
 				
+			}catch (CommunicationsException e){
+				
+				this.logMessage("Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
+				this.init(this.config);
+				return this.getUUID(name);//Maybe I should add a safe check for endless loop....
+				
 			}catch(SQLException e){
 				
 				e.printStackTrace();
@@ -121,6 +152,12 @@ public class MySql implements Database{
 				
 				return ip;
 				
+			}catch (CommunicationsException e){
+				
+				this.logMessage("Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
+				this.init(this.config);
+				return this.getIP(name);
+				
 			}catch(SQLException e){
 				
 				e.printStackTrace();
@@ -140,9 +177,19 @@ public class MySql implements Database{
 		
 		try{
 			
-			this.st.executeUpdate("DELETE FROM always_online WHERE name = '" + name.replaceAll("'", "") + "';");
+			this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES "
+					+ "('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "') ON DUPLICATE "
+					+ "KEY UPDATE uuid = '" + uuid.toString().replaceAll("'", "") + "', ip = '" + ip.replaceAll("'", "") + "';");
 			
-			this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES ('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "');");
+			//this.st.executeUpdate("DELETE FROM always_online WHERE name = '" + name.replaceAll("'", "") + "';");
+			
+			//this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES ('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "');");
+			
+		}catch (CommunicationsException e){
+			
+			this.logMessage("Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
+			this.init(this.config);
+			this.updatePlayer(name, ip, uuid);
 			
 		}catch(SQLException e){
 			
@@ -191,5 +238,11 @@ public class MySql implements Database{
     	rs.close();
     	return false;
     }
+	
+	private void logMessage(String mes){
+		
+		ProxyServer.getInstance().getLogger().info("[AlwaysOnline] " + mes);
+		
+	}
 
 }
