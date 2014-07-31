@@ -18,7 +18,24 @@ public class AlwaysOnline extends Plugin{
 	
 	public static String motdmes = "";
 	
+	private Database db = null;
+	
 	public void onEnable(){
+		
+		this.getProxy().getPluginManager().registerCommand(this, new AOCommand(this));
+		
+		this.reload();
+		
+	}
+	
+	public void reload(){
+		
+		if(this.db != null){
+			
+			this.db.close();
+			this.db = null;
+			
+		}
 		
 		if(!this.getDataFolder().exists()){
 			
@@ -32,13 +49,25 @@ public class AlwaysOnline extends Plugin{
 			
 		}
 		
-		Database db = null;
-		
 		try{
 		
 			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.getConfig());
 		
 			final int cm = yml.getInt("session-check-mode");
+			
+			if(cm == 1){
+				
+				this.getLogger().info("Session check mode will use mojang help support API!");
+				
+			}else if(cm == 2){
+				
+				this.getLogger().info("Session check mode will be doing direct ping tests!");
+				
+			}else{
+				
+				this.getLogger().info("Session check mode will be using xpaw!");
+				
+			}
 			
 			final String onlinemes = yml.getString("message-broadcast-online");
 			
@@ -80,6 +109,10 @@ public class AlwaysOnline extends Plugin{
 				return;
 				
 			}
+			
+			this.getProxy().getScheduler().cancel(this);
+			
+			this.getProxy().getPluginManager().unregisterListeners(this);
 			
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(db));
 			
@@ -150,7 +183,11 @@ public class AlwaysOnline extends Plugin{
 	
 	public void onDisable(){
 		
-		
+		if(this.db != null){
+			
+			this.db.close();
+			
+		}
 		
 	}
 	

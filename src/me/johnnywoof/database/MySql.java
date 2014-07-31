@@ -177,13 +177,13 @@ public class MySql implements Database{
 		
 		try{
 			
-			this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES "
+			/*this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES "
 					+ "('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "') ON DUPLICATE "
-					+ "KEY UPDATE uuid = '" + uuid.toString().replaceAll("'", "") + "', ip = '" + ip.replaceAll("'", "") + "';");
+					+ "KEY UPDATE uuid = VALUES(uuid), ip = VALUES(ip);");*/ //I'm bad at this mysql command somehow...
 			
-			//this.st.executeUpdate("DELETE FROM always_online WHERE name = '" + name.replaceAll("'", "") + "';");
+			this.st.executeUpdate("DELETE FROM always_online WHERE name = '" + name.replaceAll("'", "") + "';");
 			
-			//this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES ('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "');");
+			this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES ('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "');");
 			
 		}catch (CommunicationsException e){
 			
