@@ -164,7 +164,9 @@ public class AlwaysOnline extends Plugin{
 							Thread.sleep(ct);
 							
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							
+							//Removed to prevent confused errors
+							
 						}
 						
 					}
