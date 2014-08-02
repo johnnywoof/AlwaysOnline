@@ -99,7 +99,7 @@ public class Utils {
 					
 					return true;
 					
-				}else{
+				}else if(!response.toString().toLowerCase().contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")){
 					
 					return false;
 					
