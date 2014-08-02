@@ -40,7 +40,11 @@ public class AOCommand extends Command{
 				
 				ao.reload();
 				
+<<<<<<< HEAD
 				sender.sendMessage(new ComponentBuilder("Configuration file has been reloaded!").color(ChatColor.GOLD).create());
+=======
+				sender.sendMessage(new ComponentBuilder("Configuration file has been reloaded!").color(ChatColor.GOLD).create();
+>>>>>>> refs/remotes/origin/master
 				
 			}else{
 				
