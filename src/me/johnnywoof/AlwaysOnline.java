@@ -75,6 +75,8 @@ public class AlwaysOnline extends Plugin{
 			
 			final long ct = (yml.getLong("check-interval") * 1000);
 			
+			final int dm = yml.getInt("down-amount");
+			
 			int id = yml.getInt("database-type");
 			
 			AlwaysOnline.motdmes = yml.getString("message-motd-offline");
@@ -116,8 +118,10 @@ public class AlwaysOnline extends Plugin{
 			
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(db));
 			
-			this.getProxy().getScheduler().runAsync(this, new Runnable(){
+			this.getProxy().getScheduler().runAsync(this, new Runnable(){//md_5 plz add async timer thx
 
+				int downamount = 0;
+				
 				@SuppressWarnings("deprecation")
 				@Override
 				public void run() {
@@ -126,7 +130,30 @@ public class AlwaysOnline extends Plugin{
 							
 						boolean online = Utils.isMojangOnline(getProxy().getName(), cm);
 						
-						if(online){
+						if(!online){
+							
+							downamount = downamount + 1;
+							
+							if(downamount >= dm){
+								
+								if(AlwaysOnline.mojangonline){
+
+									AlwaysOnline.mojangonline = false;
+									
+									if(!offlinemes.equals("null")){
+										
+										getProxy().broadcast(offlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
+										getLogger().info("Mojang servers are now offline!");
+										
+									}
+									
+								}
+								
+							}
+							
+						}else{
+							
+							downamount = 0;
 							
 							if(!AlwaysOnline.mojangonline){
 
@@ -137,21 +164,6 @@ public class AlwaysOnline extends Plugin{
 									getProxy().broadcast(onlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
 									
 									getLogger().info("Mojang servers are now online!");
-									
-								}
-								
-							}
-							
-						}else{
-							
-							if(AlwaysOnline.mojangonline){
-
-								AlwaysOnline.mojangonline = false;
-								
-								if(!offlinemes.equals("null")){
-									
-									getProxy().broadcast(offlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
-									getLogger().info("Mojang servers are now offline!");
 									
 								}
 								

@@ -16,6 +16,12 @@ check-interval: 120
 #
 database-type: 1
 
+#How many times should we check to confirm if the session servers are down?
+down-amount: 2
+
+# "I would add a setting for how many times to check before we call the session servers offline.
+#  Like check 5 times, every second defined in check-interval, and if they are down on all times declare the session servers offline." - jeff142
+
 #Message to broadcast when mojang servers are offline. Set to null to disable.
 
 message-broadcast-offline: '&c&lMojang servers are offline! However you can still login from the same computer to get back on!'
