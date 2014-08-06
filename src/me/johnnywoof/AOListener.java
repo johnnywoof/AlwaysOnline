@@ -25,16 +25,20 @@ public class AOListener implements Listener{
 	public AOListener(Database db){
 		
 		this.db = db;
-		this.pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");
+		
+		this.pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");//The regex to verify usernames
 		
 	}
 	
+	//A high priority to allow other plugins to go first
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPreLogin(PreLoginEvent event){
 		
-		if(event.isCancelled()){return;}
+		if(event.isCancelled()){return;}//Make sure it is not canceled
 		
-		if(!AlwaysOnline.mojangonline){
+		if(!AlwaysOnline.mojangonline){//Make sure we are in mojang offline mode
+			
+			//Verify if the name attempting to connect is even verified
 			
 			if(event.getConnection().getName().length() > 16){
 				
@@ -54,13 +58,17 @@ public class AOListener implements Listener{
 				
 			}
 			
+			//Initialize our hacky stuff
+			
 			InitialHandler handler = (InitialHandler) event.getConnection();
 			
+			//Get the connecting ip
 			final String ip = handler.getAddress().getAddress().getHostAddress();
 			
-			String lastip = db.getIP(event.getConnection().getName());
+			//Get last known ip
+			final String lastip = db.getIP(event.getConnection().getName());
 			
-			if(ip == null){
+			if(ip == null){//If null the player connecting is new
 				
 				event.setCancelReason("We can not let you login because the mojang servers are offline!");
 				
@@ -70,13 +78,13 @@ public class AOListener implements Listener{
 				
 			}else{
 			
-				if(ip.equals(lastip)){
+				if(ip.equals(lastip)){//If it matches set handler to offline mode, so it does not authenticate player with mojang
 						
 					ProxyServer.getInstance().getLogger().info("Skipping session login for player " + event.getConnection().getName() + " [Connected ip: " + ip + ", Last ip: " + lastip + "]!");
 						
 					handler.setOnlineMode(false);
 						
-				}else{
+				}else{//Deny the player from joining
 						
 					ProxyServer.getInstance().getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] does not match their last ip!");
 					
@@ -94,6 +102,7 @@ public class AOListener implements Listener{
 		
 	}
 	
+	//Set priority to highest to almost guaranteed to have our MOTD displayed
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPing(ProxyPingEvent event){
 		
@@ -120,6 +129,7 @@ public class AOListener implements Listener{
 	}
 	
 	@SuppressWarnings("deprecation")
+	//Set priority to lowest since we'll be needing to go first
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPost(PostLoginEvent event){
 		
@@ -131,6 +141,8 @@ public class AOListener implements Listener{
 			
 				UUID uuid = db.getUUID(event.getPlayer().getName());
 				
+				//Now here is our hacky geeky stuff
+				
 				Field sf = handler.getClass().getDeclaredField("uniqueId");
 				sf.setAccessible(true);
 				sf.set(handler, uuid);
@@ -141,7 +153,7 @@ public class AOListener implements Listener{
 				
 				ProxyServer.getInstance().getLogger().info("Overriding uuid for " + event.getPlayer().getName() + " to " + uuid.toString() + "! New uuid is " + event.getPlayer().getUniqueId().toString());
 			
-			}catch(Exception e){
+			}catch(Exception e){//Play it safe, if an error deny the player
 				
 				handler.setOnlineMode(ProxyServer.getInstance().getConfig().isOnlineMode());
 				
@@ -155,6 +167,7 @@ public class AOListener implements Listener{
 			
 		}else{
 			
+			//If we are not in mojang offline mode, update the player data
 			db.updatePlayer(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), event.getPlayer().getUniqueId());
 			
 		}

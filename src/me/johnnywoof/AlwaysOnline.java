@@ -22,15 +22,21 @@ public class AlwaysOnline extends Plugin{
 	
 	public void onEnable(){
 		
+		//Register our command
 		this.getProxy().getPluginManager().registerCommand(this, new AOCommand(this));
 		
 		this.reload();
 		
 	}
 	
+	/**
+	 * 
+	 * Reloads the plugin
+	 * 
+	 * */
 	public void reload(){
 		
-		if(this.db != null){
+		if(this.db != null){//Close existing open database connections on reload
 			
 			this.db.close();
 			this.db = null;
@@ -112,9 +118,13 @@ public class AlwaysOnline extends Plugin{
 				
 			}
 			
+			//Kill existing runnables and listeners (in case of reload)
+			
 			this.getProxy().getScheduler().cancel(this);
 			
 			this.getProxy().getPluginManager().unregisterListeners(this);
+			
+			//Register our new listener and runnable
 			
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(db));
 			
@@ -197,7 +207,7 @@ public class AlwaysOnline extends Plugin{
 	
 	public void onDisable(){
 		
-		if(this.db != null){
+		if(this.db != null){//Close that database
 			
 			this.db.close();
 			
@@ -205,6 +215,12 @@ public class AlwaysOnline extends Plugin{
 		
 	}
 	
+	/**
+	 * 
+	 * Generates a file object for the config file
+	 * @return The config file object
+	 * 
+	 * */
 	private File getConfig(){
 		
 		return new File(this.getDataFolder() + File.separator + "config.yml");

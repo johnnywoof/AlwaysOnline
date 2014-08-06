@@ -19,8 +19,20 @@ import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 public class MySql implements Database{
 
+	/**
+	 * 
+	 * Cache hashmap format:
+	 * <Player Name>, <Player IP~Player UUID>
+	 * Where ~ is the delimiter
+	 * 
+	 * */
 	private final HashMap<String, String> cache = new HashMap<String, String>();
 	
+	/**
+	 * 
+	 * Our mysql connection variable
+	 * 
+	 * */
 	private Statement st = null;
 	
 	private File config = null;
@@ -28,7 +40,7 @@ public class MySql implements Database{
 	@Override
 	public void init(File config) {
 		
-		this.config = config;
+		this.config = config;//Update our config for auto reconnect
 		
 		try {
 			
@@ -225,6 +237,13 @@ public class MySql implements Database{
 		
 	}
 	
+	/**
+	 * 
+	 * Determines if a table exists
+	 * @param The table name
+	 * @return If the table exists
+	 * 
+	 * */
 	private boolean doesTableExist(String tablename) throws SQLException{
     	ResultSet rs = st.getConnection().getMetaData().getTables(null, null, tablename, null);
     	if (rs.next()) {
@@ -235,6 +254,12 @@ public class MySql implements Database{
     	return false;
     }
 	
+	/**
+	 * 
+	 * Logs a message to the console/file
+	 * @param The message to log (without [AlwaysOnline])
+	 * 
+	 * */
 	private void logMessage(String mes){
 		
 		ProxyServer.getInstance().getLogger().info("[AlwaysOnline] " + mes);

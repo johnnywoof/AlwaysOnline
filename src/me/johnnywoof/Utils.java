@@ -15,6 +15,14 @@ import com.google.common.io.ByteStreams;
 
 public class Utils {
 
+	/**
+	 * 
+	 * Returns if mojang session servers are online
+	 * @param The server name
+	 * @param The session check mode
+	 * @return If mojang servers are online
+	 * 
+	 * */
 	public static boolean isMojangOnline(String sn, int mode){
 		
 		if(mode == 0){
@@ -117,6 +125,12 @@ public class Utils {
 		
 	}
 	
+	/**
+	 * 
+	 * Saves the default plugin configuration file from the jar
+	 * @param The datafolder
+	 * 
+	 * */
 	public static void saveDefaultConfig(File datafolder){
 		
 		if (!datafolder.exists()) {
@@ -131,7 +145,7 @@ public class Utils {
                     ByteStreams.copy(is, os);
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to create configuration file", e);
+                e.printStackTrace();
             }
         }
 		
