@@ -81,6 +81,12 @@ public class AlwaysOnline extends Plugin{
 			
 			final long ct = (yml.getLong("check-interval") * 1000);
 			
+			if(ct < 30000){
+				
+				this.getLogger().warning("WARNING! Your check-interval is less than 30 seconds, this can get your IP banned on various sites!");
+				
+			}
+			
 			final int dm = yml.getInt("down-amount");
 			
 			int id = yml.getInt("database-type");

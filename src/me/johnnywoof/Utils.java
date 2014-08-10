@@ -25,7 +25,7 @@ public class Utils {
 	 * */
 	public static boolean isMojangOnline(String sn, int mode){
 		
-		if(mode == 0){
+		if(mode == 1){
 			
 			try{
 			
