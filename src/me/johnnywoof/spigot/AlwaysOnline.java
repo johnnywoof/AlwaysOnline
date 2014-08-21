@@ -1,14 +1,20 @@
 package me.johnnywoof.spigot;
 
+import java.io.File;
+import java.io.IOException;
+
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
 import me.johnnywoof.database.MySql;
+import me.johnnywoof.utils.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,7 +30,6 @@ public class AlwaysOnline extends JavaPlugin{
 	public void onEnable(){
 		
 		//Init the plugin
-		
 		this.reload();
 		
 	}
@@ -35,6 +40,56 @@ public class AlwaysOnline extends JavaPlugin{
 	 * 
 	 * */
 	public void reload(){
+		
+		this.getLogger().info("Loading AlwaysOnline on spigot. [" + this.getServer().getVersion() + "]");
+		
+		/*String version = System.getProperty("java.version");
+		
+	    int pos = 0, count = 0;
+	    
+	    for ( ; pos<version.length() && count < 2; pos ++) {
+	    	
+	        if (version.charAt(pos) == '.') count ++;
+	        
+	    }
+	    
+	    double jv = Double.parseDouble (version.substring (0, pos));
+	    
+	    if(jv >= 1.7){
+	    
+	    	this.getLogger().info("Detected java version is OK: " + jv);
+	    
+	    }else{
+	    	
+	    	this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+			this.getLogger().warning("Java 7 is required to run AlwaysOnline in Spigot!");
+			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+	    	
+	    }*/
+		
+		if(this.isBungeecordEnabled()){
+			
+			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+			this.getLogger().warning("You have bungeecord enabled.");
+			this.getLogger().warning("Please install AlwaysOnline as a bungeecord plugin");
+			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+			
+		}
+		
+		if(org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly){
+			
+			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+			this.getLogger().warning("You have saveUserCacheOnStopOnly set to true.");
+			this.getLogger().warning("Please set it to false for this plugin to work");
+			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+			this.getServer().getPluginManager().disablePlugin(this);
+			return;
+			
+		}
 		
 		if(this.db != null){//Close existing open database connections on reload
 			
@@ -275,6 +330,34 @@ public class AlwaysOnline extends JavaPlugin{
 		
 	}
 	
+	private boolean isBungeecordEnabled(){
+		
+		File config = new File("spigot.yml");
+		
+		if(config.exists()){
+			
+			try{
+				
+				YamlConfiguration yml = new YamlConfiguration();
+				
+				yml.load(config);
+				
+				return yml.getBoolean("settings.bungeecord");
+				
+			}catch(IOException | InvalidConfigurationException e){
+				
+				e.printStackTrace();
+				
+			}
+			
+		}
+		
+		config = null;
+		
+		return false;
+		
+	}
+	
 	private void displayHelp(CommandSender sender){
 		
 		sender.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "----------" + ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline " + ChatColor.GRAY + this.getDescription().getVersion() + "" + ChatColor.GOLD + "]" + ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "----------");
@@ -285,5 +368,69 @@ public class AlwaysOnline extends JavaPlugin{
 		sender.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "------------------------------");
 		
 	}
+
+	/*
+	 * 
+	 * Gets the entire dump of the database and writes it to the usercache.json
+	 * 
+	 *
+	private void writeCache() throws IOException, ParseException{
+		
+		File servercache = new File("usercache.json");
+		
+		if(servercache.exists()){
+			
+			servercache.delete();
+			
+		}
+		
+		//AHA OUR OWN JSON
+		PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(servercache, true)));
+		
+		w.println("[");
+		
+		int index = 0;
+		
+		ArrayList<String> data = db.getDatabaseDump();
+		
+		int size = data.size() - 1;
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		
+		calendar.add(2, 1);
+		
+		String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(calendar.getTime());
+		
+		for(String l : data){
+			
+			String[] d = l.split("§");
+			
+			if(index == size || index == 0){
+			
+				w.println("{\"name\":\"" + d[0] + "\",\"uuid\":\"" + d[2] + "\",\"expiresOn\":\"" + date + "\"}");
+			
+			}else{
+				
+				w.println(",{\"name\":\"" + d[0] + "\",\"uuid\":\"" + d[2] + "\",\"expiresOn\":\"" + date + "\"}");
+				
+			}
+			
+			index++;
+			
+		}
+		
+		data.clear();
+		
+		w.println("]");
+		
+		w.close();
+		
+		w = null;
+		
+		SpigotNMS.updateCache();
+		
+	}*/
 	
 }

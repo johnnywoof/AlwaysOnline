@@ -1,5 +1,6 @@
 package me.johnnywoof.database;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public interface Database {
@@ -54,5 +55,13 @@ public interface Database {
 	 * 
 	 * */
 	public void close();
+	
+	/**
+	 * 
+	 * Gets the entire alwaysonline database data and stores it in an arraylist
+	 * 
+	 * @return An arraylist (name§ip§uuid)
+	 * */
+	public ArrayList<String> getDatabaseDump();
 	
 }

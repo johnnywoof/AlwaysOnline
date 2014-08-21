@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -270,6 +271,33 @@ public class MySql implements Database{
 	private void logMessage(Level level, String mes){
 		
 		log.log(level, "[AlwaysOnline] " + mes);
+		
+	}
+
+	@Override
+	public ArrayList<String> getDatabaseDump() {
+		
+		ArrayList<String> data = new ArrayList<String>();
+		
+		try {
+			
+			ResultSet rs = this.st.executeQuery("SELECT * FROM always_online;");
+			
+			while(rs.next()){
+				
+				data.add(rs.getString(1) + "§" + rs.getString(2) + "§" + rs.getString(3));
+				
+			}
+			
+			rs.close();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return data;
 		
 	}
 

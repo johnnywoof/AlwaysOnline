@@ -13,8 +13,49 @@ public class SpigotNMS {
 	private final static String packageName = Bukkit.getServer().getClass().getPackage().getName();
 	private final static String version = packageName.substring(packageName.lastIndexOf(".") + 1);
 	
+	/*
+	 * 
+	 * Forces the server to re-read the usercache.json file
+	 * @return If success
+	 * @deprecated Method is useless
+	 * 
+	 * 
+	@Deprecated
+	public static boolean updateCache(){
+		
+		//net.minecraft.server.v1_7_R4.UserCache
+		
+		try {
+			
+			Class<?> userclass = Class.forName("net.minecraft.server." + version + ".UserCache");
+			
+			String ver = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+			
+			Class<?> c = Class.forName(ver + ".MinecraftServer");
+				
+			Object obj = c.getMethod("getServer").invoke(null);
+			
+			Object uci = userclass.getConstructor(c, File.class).newInstance(obj, new File("usercache.json"));
+			
+			Field sf = c.getDeclaredField("X");
+			
+			sf.setAccessible(true);
+			
+			sf.set(obj, uci);
+			
+			return true;
+			
+		} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}*/
+	
 	/**
 	 * 
+	 * Writes the new UUID almost everywhere as possible
 	 * @param The bukkit player
 	 * @param The UUID
 	 * @return If success
@@ -44,7 +85,7 @@ public class SpigotNMS {
 			
 			sf.set(nm, uuid);
 			
-			//Write the actual UUID
+			//Write the actual UUID into the object
 			
 			//Cast it to a Craft entity
 			
@@ -61,7 +102,7 @@ public class SpigotNMS {
 			sf.setAccessible(true);
 			
 			sf.set(handle, uuid);
-            
+			
 			return true;
 			
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {

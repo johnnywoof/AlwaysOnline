@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class MultiFile implements Database{
@@ -151,5 +152,54 @@ public class MultiFile implements Database{
 
 	@Override
 	public void init(String host, int port, String databasename, String username, String password) {}
+
+	@Override
+	public ArrayList<String> getDatabaseDump() {
+		
+		ArrayList<String> data = new ArrayList<String>();
+		
+		File dir = new File("accounts");
+		
+		if(!dir.exists()){
+			
+			dir.mkdir();
+			
+		}
+		
+		BufferedReader br = null;
+		
+		try{
+		
+			for(File f : dir.listFiles()){
+				
+				if(f.getName().endsWith(".txt")){
+					
+					br = new BufferedReader(new FileReader(f));
+					
+					String name = f.getName().replaceAll(".txt", "");
+					
+					String ip = br.readLine();
+					
+					UUID uuid = UUID.fromString(br.readLine());
+					
+					br.close();
+					
+					data.add(name + "§" + ip + "§" + uuid.toString());
+					
+				}
+				
+			}
+		
+		}catch(IOException e){
+			
+			e.printStackTrace();
+			
+		}
+		
+		br = null;
+		
+		return data;
+		
+	}
 
 }

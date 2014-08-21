@@ -37,6 +37,8 @@ public class AlwaysOnline extends Plugin{
 	 * */
 	public void reload(){
 		
+		this.getLogger().info("Loading AlwaysOnline on bungeecord. [" + this.getProxy().getVersion() + "]");
+		
 		if(this.db != null){//Close existing open database connections on reload
 			
 			this.db.close();
