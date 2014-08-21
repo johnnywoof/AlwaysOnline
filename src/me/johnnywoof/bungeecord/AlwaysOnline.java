@@ -1,11 +1,11 @@
-package me.johnnywoof;
+package me.johnnywoof.bungeecord;
 
 import java.io.File;
 import java.io.IOException;
 
+import me.johnnywoof.database.MySql;
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
-import me.johnnywoof.database.MySql;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -57,6 +57,7 @@ public class AlwaysOnline extends Plugin{
 		
 		try{
 		
+			//Why is this aint in the javadocs?
 			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.getConfig());
 		
 			final int cm = yml.getInt("session-check-mode");
@@ -111,7 +112,7 @@ public class AlwaysOnline extends Plugin{
 				
 			}
 			
-			db.init(this.getConfig());
+			db.init(yml.getString("host"), yml.getInt("port"), yml.getString("database-name"), yml.getString("database-username"), yml.getString("database-password"));
 			
 			this.getLogger().info("Database is ready to go!");
 			

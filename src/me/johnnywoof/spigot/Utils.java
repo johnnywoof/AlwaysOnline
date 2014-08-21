@@ -1,17 +1,11 @@
-package me.johnnywoof;
+package me.johnnywoof.spigot;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
-
-import com.google.common.io.ByteStreams;
 
 public class Utils {
 
@@ -122,32 +116,6 @@ public class Utils {
 		}
 		
 		return true;
-		
-	}
-	
-	/**
-	 * 
-	 * Saves the default plugin configuration file from the jar
-	 * @param The datafolder
-	 * 
-	 * */
-	public static void saveDefaultConfig(File datafolder){
-		
-		if (!datafolder.exists()) {
-            datafolder.mkdir();
-        }
-        File configFile = new File(datafolder, "config.yml");
-        if (!configFile.exists()) {
-            try {
-                configFile.createNewFile();
-                try (InputStream is = Utils.class.getResourceAsStream("/config.yml");
-                     OutputStream os = new FileOutputStream(configFile)) {
-                    ByteStreams.copy(is, os);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 		
 	}
 	

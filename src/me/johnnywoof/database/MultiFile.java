@@ -144,12 +144,12 @@ public class MultiFile implements Database{
 	}
 
 	@Override
-	public void init(File config) {}
-
-	@Override
 	public void resetCache() {}
 
 	@Override
 	public void close() {}
+
+	@Override
+	public void init(String host, int port, String databasename, String username, String password) {}
 
 }

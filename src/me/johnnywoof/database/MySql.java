@@ -1,7 +1,5 @@
 package me.johnnywoof.database;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,11 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.UUID;
-
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
@@ -35,12 +30,15 @@ public class MySql implements Database{
 	 * */
 	private Statement st = null;
 	
-	private File config = null;
+	private String reconnectinfo = null;
+	
+	//I normally do not do this
+	private final Logger log = Logger.getLogger("Minecraft");
 	
 	@Override
-	public void init(File config) {
+	public void init(String host, int port, String databasename, String username, String password) {
 		
-		this.config = config;//Update our config for auto reconnect
+		this.reconnectinfo = host + "§" + port + "§" + databasename + "§" + username + "§" + password;//Update our string for auto reconnect
 		
 		try {
 			
@@ -56,17 +54,15 @@ public class MySql implements Database{
 					
 				}catch(SQLException ex){
 					
-					ProxyServer.getInstance().getLogger().warning("[AlwaysOnline] Failed to cleanly close connection to database! [" + ex.getMessage() + "]");
+					this.logMessage(Level.WARNING, "[AlwaysOnline] Failed to cleanly close connection to database! [" + ex.getMessage() + "]");
 					
 				}
 				
 			}
 			
-			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(config);//Why is this aint in the javadocs?
-			
 			Class.forName("com.mysql.jdbc.Driver").newInstance();//Maybe I should test to see if I really need to this on every connection
 			
-		    Connection conn = DriverManager.getConnection("jdbc:mysql://" + yml.getString("host") + ":" + yml.getInt("port") + "/" + yml.getString("database-name"), yml.getString("database-username"), yml.getString("database-password"));  
+		    Connection conn = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + databasename, username, password);  
 		   
 		    this.st = conn.createStatement();
 		    
@@ -76,10 +72,8 @@ public class MySql implements Database{
 		    	st.executeUpdate("ALTER TABLE always_online ADD INDEX (`name`)");
 		    	
 		    }
-			
-		    yml = null;
 		    
-		} catch (IOException | SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+		} catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			
 			e.printStackTrace();
 			
@@ -118,8 +112,8 @@ public class MySql implements Database{
 				
 			}catch (CommunicationsException e){
 				
-				this.logMessage("Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
-				this.init(this.config);
+				this.logMessage(Level.INFO, "Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
+				this.reconnect();
 				return this.getUUID(name);//Maybe I should add a safe check for endless loop....
 				
 			}catch(SQLException e){
@@ -166,8 +160,8 @@ public class MySql implements Database{
 				
 			}catch (CommunicationsException e){
 				
-				this.logMessage("Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
-				this.init(this.config);
+				this.logMessage(Level.INFO, "Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
+				this.reconnect();
 				return this.getIP(name);
 				
 			}catch(SQLException e){
@@ -195,8 +189,8 @@ public class MySql implements Database{
 			
 		}catch (CommunicationsException e){
 			
-			this.logMessage("Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
-			this.init(this.config);
+			this.logMessage(Level.INFO, "Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
+			this.reconnect();
 			this.updatePlayer(name, ip, uuid);
 			
 		}catch(SQLException e){
@@ -256,13 +250,26 @@ public class MySql implements Database{
 	
 	/**
 	 * 
+	 * Reconnects to the database
+	 * 
+	 * */
+	private void reconnect(){
+
+		String[] data = this.reconnectinfo.split("§");
+		
+		this.init(data[0], Integer.parseInt(data[1]), data[2], data[3], data[4]);
+		
+	}
+	
+	/**
+	 * 
 	 * Logs a message to the console/file
 	 * @param The message to log (without [AlwaysOnline])
 	 * 
 	 * */
-	private void logMessage(String mes){
+	private void logMessage(Level level, String mes){
 		
-		ProxyServer.getInstance().getLogger().info("[AlwaysOnline] " + mes);
+		log.log(level, "[AlwaysOnline] " + mes);
 		
 	}
 

@@ -1,4 +1,4 @@
-package me.johnnywoof;
+package me.johnnywoof.bungeecord;
 
 import java.lang.reflect.Field;
 import java.util.UUID;

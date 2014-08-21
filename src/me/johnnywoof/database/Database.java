@@ -1,17 +1,16 @@
 package me.johnnywoof.database;
 
-import java.io.File;
 import java.util.UUID;
 
 public interface Database {
 	
 	/**
 	 * 
-	 * Initialize the database
+	 * Initialize the database (currently mysql for now)
 	 * @param The configuration file
 	 * 
 	 * */
-	public void init(File config);
+	public void init(String host, int port, String databasename, String username, String password);
 	
 	/**
 	 * 
