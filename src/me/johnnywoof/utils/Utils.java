@@ -18,6 +18,7 @@ public class Utils {
 	/**
 	 * 
 	 * Returns if mojang session servers are online
+	 * XPAW IS NOT SUPPORTED IN THIS METHOD
 	 * @param The server name
 	 * @param The session check mode
 	 * @return If mojang servers are online
@@ -34,6 +35,8 @@ public class Utils {
 		 
 				// optional default is GET
 				con.setRequestMethod("GET");
+				
+				con.setRequestProperty("Content-Type", "application/json");
 		 
 				//add request header
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
@@ -82,45 +85,9 @@ public class Utils {
 			
 		}else{
 			
-			try{
-			
-				URL obj = new URL("http://xpaw.ru/mcstatus/status.json");
-				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		 
-				// optional default is GET
-				con.setRequestMethod("GET");
-				
-				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-		 
-				BufferedReader in = new BufferedReader(
-				        new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuffer response = new StringBuffer();
-		 
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-				
-				if(response.toString().toLowerCase().contains("\"session\":{\"status\":\"up\",\"title\":\"online\"")){
-					
-					return true;
-					
-				}else if(!response.toString().toLowerCase().contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")){
-					
-					return false;
-					
-				}
-			
-			}catch(IOException e){
-				
-				e.printStackTrace();
-				
-			}
+			throw new IllegalArgumentException("Mode \"" + mode + "\" is not valid.");
 			
 		}
-		
-		return true;
 		
 	}
 	

@@ -3,10 +3,11 @@ package me.johnnywoof.bungeecord;
 import java.io.File;
 import java.io.IOException;
 
-import me.johnnywoof.database.MySql;
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
+import me.johnnywoof.database.MySql;
 import me.johnnywoof.utils.Utils;
+import me.johnnywoof.utils.XpawManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -19,7 +20,11 @@ public class AlwaysOnline extends Plugin{
 	
 	public static String motdmes = "";
 	
+	public static boolean debug = false;
+	
 	private Database db = null;
+	
+	private XpawManager xm = null;
 	
 	public void onEnable(){
 		
@@ -77,6 +82,15 @@ public class AlwaysOnline extends Plugin{
 				
 				this.getLogger().info("Session check mode will be using xpaw!");
 				
+				//Set the xm field
+				this.xm = null;
+				
+				this.getLogger().info("Getting HTTP cookies for xpaw...");
+					
+				this.xm = new XpawManager();
+				
+				this.getLogger().info("Finished getting cookies!");
+				
 			}
 			
 			final String onlinemes = yml.getString("message-broadcast-online");
@@ -96,6 +110,8 @@ public class AlwaysOnline extends Plugin{
 			int id = yml.getInt("database-type");
 			
 			AlwaysOnline.motdmes = yml.getString("message-motd-offline");
+			
+			AlwaysOnline.debug = yml.getBoolean("debug");
 			
 			if(AlwaysOnline.motdmes.equals("null")){
 				
@@ -137,7 +153,7 @@ public class AlwaysOnline extends Plugin{
 			//Register our new listener and runnable
 			
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(db));
-			
+
 			this.getProxy().getScheduler().runAsync(this, new Runnable(){//md_5 plz add async timer thx
 
 				int downamount = 0;
@@ -148,7 +164,17 @@ public class AlwaysOnline extends Plugin{
 					
 					while(true){
 							
-						boolean online = Utils.isMojangOnline(getProxy().getName(), cm);
+						boolean online;
+						
+						if(cm == 1 || cm == 2){
+							
+							online = Utils.isMojangOnline(getProxy().getName(), cm);
+							
+						}else{
+								
+							online = xm.isXpawClaimingOnline();
+							
+						}
 						
 						if(!online){
 							
@@ -163,9 +189,10 @@ public class AlwaysOnline extends Plugin{
 									if(!offlinemes.equals("null")){
 										
 										getProxy().broadcast(offlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
-										getLogger().info("Mojang servers are now offline!");
 										
 									}
+									
+									getLogger().info("Mojang servers are now offline!");
 									
 								}
 								
@@ -183,9 +210,9 @@ public class AlwaysOnline extends Plugin{
 									
 									getProxy().broadcast(onlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
 									
-									getLogger().info("Mojang servers are now online!");
-									
 								}
+								
+								getLogger().info("Mojang servers are now online!");
 								
 							}
 							

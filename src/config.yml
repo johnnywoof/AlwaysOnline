@@ -33,6 +33,9 @@ message-broadcast-online: '&c&lMojang servers are back online and all services a
 #Message for the MOTD to be when mojang servers are offline. Set to null to disable.
 message-motd-offline: '&eMojang servers are down,.newline.&ebut you can still connect!'
 
+#Set this to true for extra messages used for debugging
+debug: false
+
 ##########################################
 #    Mysql Database Information
 #    Only edit if using mysql

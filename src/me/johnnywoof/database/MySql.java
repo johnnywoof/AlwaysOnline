@@ -34,6 +34,7 @@ public class MySql implements Database{
 	private String reconnectinfo = null;
 	
 	//I normally do not do this
+	//Wait. this is used by bungeecord to! hmmmmmm......
 	private final Logger log = Logger.getLogger("Minecraft");
 	
 	@Override
@@ -184,7 +185,7 @@ public class MySql implements Database{
 		
 		try{
 			
-			this.st.executeUpdate("DELETE FROM always_online WHERE name = '" + name.replaceAll("'", "") + "' LIMIT 1;");
+			this.st.executeUpdate("DELETE FROM always_online WHERE name = '" + name.replaceAll("'", "") + "';");
 			
 			this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES ('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "');");
 			
