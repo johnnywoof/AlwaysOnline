@@ -1,5 +1,5 @@
 name: AlwaysOnline
-version: 2.0.1
+version: 2.0.2
 main: me.johnnywoof.spigot.AlwaysOnline
 author: johnnywoof
 commands:

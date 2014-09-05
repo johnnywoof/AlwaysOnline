@@ -27,6 +27,10 @@ public class AlwaysOnline extends JavaPlugin{
 	
 	private Database db = null;
 	
+	//TODO
+	//Add the new xpaw support
+	//Add the disable boolean
+	
 	public void onEnable(){
 		
 		//Init the plugin

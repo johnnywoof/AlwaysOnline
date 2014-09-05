@@ -9,6 +9,7 @@ import me.johnnywoof.database.MySql;
 import me.johnnywoof.utils.Utils;
 import me.johnnywoof.utils.XpawManager;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -21,6 +22,8 @@ public class AlwaysOnline extends Plugin{
 	public static String motdmes = "";
 	
 	public static boolean debug = false;
+	
+	public boolean disabled = false;
 	
 	private Database db = null;
 	
@@ -163,59 +166,83 @@ public class AlwaysOnline extends Plugin{
 				public void run() {
 					
 					while(true){
-							
-						boolean online;
 						
-						if(cm == 1 || cm == 2){
-							
-							online = Utils.isMojangOnline(getProxy().getName(), cm);
-							
-						}else{
-								
-							online = xm.isXpawClaimingOnline();
-							
-						}
+						if(!disabled){
 						
-						if(!online){
+							boolean online;
 							
-							downamount = downamount + 1;
-							
-							if(downamount >= dm){
+							if(cm == 1 || cm == 2){
 								
-								if(AlwaysOnline.mojangonline){
-
-									AlwaysOnline.mojangonline = false;
+								online = Utils.isMojangOnline(getProxy().getName(), cm);
+								
+							}else{
 									
-									if(!offlinemes.equals("null")){
+								online = xm.isXpawClaimingOnline();
+								
+							}
+							
+							if(!online){
+								
+								downamount = downamount + 1;
+								
+								if(downamount >= dm){
+									
+									if(AlwaysOnline.mojangonline){
+	
+										AlwaysOnline.mojangonline = false;
 										
-										getProxy().broadcast(offlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
+										if(!offlinemes.equals("null")){
+											
+											getProxy().broadcast(offlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
+											
+										}
+										
+										getLogger().info("Mojang servers are now offline!");
+										
+										for(ProxiedPlayer p : getProxy().getPlayers()){
+											
+											if(p.hasPermission("alwaysonline.notify")){
+												
+												p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers have been detected offline!");
+												
+											}
+											
+										}
 										
 									}
 									
-									getLogger().info("Mojang servers are now offline!");
+								}
+								
+							}else{
+								
+								downamount = 0;
+								
+								if(!AlwaysOnline.mojangonline){
+	
+									AlwaysOnline.mojangonline = true;
+									
+									if(!onlinemes.equals("null")){
+										
+										getProxy().broadcast(onlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
+										
+									}
+									
+									getLogger().info("Mojang servers are now online!");
+									
+									for(ProxiedPlayer p : getProxy().getPlayers()){
+										
+										if(p.hasPermission("alwaysonline.notify")){
+											
+											p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now online!");
+											
+										}
+										
+									}
 									
 								}
 								
 							}
-							
-						}else{
-							
-							downamount = 0;
-							
-							if(!AlwaysOnline.mojangonline){
-
-								AlwaysOnline.mojangonline = true;
-								
-								if(!onlinemes.equals("null")){
-									
-									getProxy().broadcast(onlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
-									
-								}
-								
-								getLogger().info("Mojang servers are now online!");
-								
-							}
-							
+						
 						}
 						
 						try {
