@@ -138,8 +138,6 @@ public class AlwaysOnline extends Plugin{
 			
 			this.getLogger().info("Database is ready to go!");
 			
-			yml = null;
-			
 			if(ct == -1 || cm == -1){
 				
 				this.getLogger().severe("Negative number!");
@@ -155,7 +153,9 @@ public class AlwaysOnline extends Plugin{
 			
 			//Register our new listener and runnable
 			
-			this.getProxy().getPluginManager().registerListener(this, new AOListener(db));
+			this.getProxy().getPluginManager().registerListener(this, new AOListener(yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db));
+			
+			yml = null;//I have C instincts......
 
 			this.getProxy().getScheduler().runAsync(this, new Runnable(){//md_5 plz add async timer thx
 

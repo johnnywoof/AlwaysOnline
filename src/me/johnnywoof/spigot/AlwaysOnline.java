@@ -7,6 +7,7 @@ import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
 import me.johnnywoof.database.MySql;
 import me.johnnywoof.utils.Utils;
+import me.johnnywoof.utils.XpawManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,9 +28,9 @@ public class AlwaysOnline extends JavaPlugin{
 	
 	private Database db = null;
 	
-	//TODO
-	//Add the new xpaw support
-	//Add the disable boolean
+	private XpawManager xm = null;
+	
+	public boolean disabled = false;
 	
 	public void onEnable(){
 		
@@ -84,6 +85,7 @@ public class AlwaysOnline extends JavaPlugin{
 			
 		}
 		
+		//I NEED A INITUUIDEVENT!!
 		if(org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly){
 			
 			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
@@ -125,6 +127,15 @@ public class AlwaysOnline extends JavaPlugin{
 		}else{
 			
 			this.getLogger().info("Session check mode will be using xpaw!");
+			
+			//Set the xm field
+			this.xm = null;
+			
+			this.getLogger().info("Getting HTTP cookies for xpaw...");
+				
+			this.xm = new XpawManager();
+			
+			this.getLogger().info("Finished getting cookies!");
 			
 		}
 		
@@ -174,16 +185,12 @@ public class AlwaysOnline extends JavaPlugin{
 		
 		this.getLogger().info("Database is ready to go!");
 		
-		yml = null;
-		
 		if(ct == -1 || cm == -1){
 			
 			this.getLogger().severe("Negative number!");
 			return;
 			
 		}
-		
-		yml = null;
 		
 		//Kill existing runnables and listeners (in case of reload)
 		
@@ -193,7 +200,9 @@ public class AlwaysOnline extends JavaPlugin{
 		
 		//Register our new listener and runnable
 		
-		this.getServer().getPluginManager().registerEvents(new AOListener(db), this);
+		this.getServer().getPluginManager().registerEvents(new AOListener(yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db), this);
+		
+		yml = null;
 		
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
 
@@ -202,65 +211,79 @@ public class AlwaysOnline extends JavaPlugin{
 			@Override
 			public void run() {
 				
-				boolean online = Utils.isMojangOnline(getServer().getName(), cm);
+				if(!disabled){
 				
-				if(!online){
+					boolean online;
 					
-					downamount = downamount + 1;
-					
-					if(downamount >= dm){
+					if(cm == 1 || cm == 2){
 						
-						if(AlwaysOnline.mojangonline){
-
-							AlwaysOnline.mojangonline = false;
+						online = Utils.isMojangOnline(getServer().getName(), cm);
+						
+					}else{
 							
-							SpigotNMS.setOnlineMode(false);
+						online = xm.isXpawClaimingOnline();
+						
+					}
+					
+					if(!online){
+						
+						downamount = downamount + 1;
+						
+						if(downamount >= dm){
 							
-							if(!offlinemes.equals("null")){
+							if(AlwaysOnline.mojangonline){
+	
+								AlwaysOnline.mojangonline = false;
 								
-								for(Player p : Bukkit.getOnlinePlayers()){//Make sure the players get it
+								SpigotNMS.setOnlineMode(false);
+								
+								if(!offlinemes.equals("null")){
 									
-									p.sendMessage(offlinemes);
+									for(Player p : Bukkit.getOnlinePlayers()){//Make sure the players get it
+										
+										p.sendMessage(offlinemes);
+										
+									}
+									
+									getLogger().info("Mojang servers are now offline!");
 									
 								}
 								
-								getLogger().info("Mojang servers are now offline!");
+							}
+							
+						}
+						
+					}else{
+						
+						downamount = 0;
+						
+						if(!AlwaysOnline.mojangonline){
+	
+							AlwaysOnline.mojangonline = true;
+							
+							if(!SpigotNMS.setOnlineMode(true)){
+								
+								getLogger().severe("Failed to set online-mode back to true! Turning off server for security purposes.");
+								getServer().shutdown();
+								
+							}
+							
+							if(!onlinemes.equals("null")){
+								
+								for(Player p : Bukkit.getOnlinePlayers()){//Make sure the players get it
+									
+									p.sendMessage(onlinemes);
+									
+								}
+								
+								getLogger().info("Mojang servers are now online!");
 								
 							}
 							
 						}
 						
 					}
-					
-				}else{
-					
-					downamount = 0;
-					
-					if(!AlwaysOnline.mojangonline){
-
-						AlwaysOnline.mojangonline = true;
-						
-						if(!SpigotNMS.setOnlineMode(true)){
-							
-							getLogger().severe("Failed to set online-mode back to true! Turning off server for security purposes.");
-							getServer().shutdown();
-							
-						}
-						
-						if(!onlinemes.equals("null")){
-							
-							for(Player p : Bukkit.getOnlinePlayers()){//Make sure the players get it
-								
-								p.sendMessage(onlinemes);
-								
-							}
-							
-							getLogger().info("Mojang servers are now online!");
-							
-						}
-						
-					}
-					
+				
 				}
 				
 			}
@@ -309,6 +332,18 @@ public class AlwaysOnline extends JavaPlugin{
 					}
 					
 					sender.sendMessage(ChatColor.GOLD + "Mojang offline mode is now " + ((!AlwaysOnline.mojangonline ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled")) + ChatColor.GOLD + "!");
+					
+				}else if(args[0].equalsIgnoreCase("disable")){
+					
+					this.disabled = true;
+					
+					sender.sendMessage(ChatColor.GOLD + "AlwaysOnline has been disabled! AlwaysOnline will no longer check to see if the session server is offline.");
+					
+				}else if(args[0].equalsIgnoreCase("enable")){
+					
+					this.disabled = false;
+					
+					sender.sendMessage(ChatColor.GOLD + "AlwaysOnline has been enabled! AlwaysOnline will now check to see if the session server is offline.");
 					
 				}else if(args[0].equalsIgnoreCase("reload")){
 					
@@ -367,6 +402,8 @@ public class AlwaysOnline extends JavaPlugin{
 		sender.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "----------" + ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline " + ChatColor.GRAY + this.getDescription().getVersion() + "" + ChatColor.GOLD + "]" + ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "----------");
 		
 		sender.sendMessage(ChatColor.GOLD + "/alwaysonline toggle - " + ChatColor.DARK_GREEN + "Toggles between mojang online mode");
+		sender.sendMessage(ChatColor.GOLD + "/alwaysonline enable - " + ChatColor.DARK_GREEN + "Enables the plugin");
+		sender.sendMessage(ChatColor.GOLD + "/alwaysonline disable - " + ChatColor.DARK_GREEN + "Disables the plugin");
 		sender.sendMessage(ChatColor.GOLD + "/alwaysonline reload - " + ChatColor.DARK_GREEN + "Reloads the configuration file");
 		
 		sender.sendMessage(ChatColor.GOLD + "" + ChatColor.STRIKETHROUGH + "------------------------------");

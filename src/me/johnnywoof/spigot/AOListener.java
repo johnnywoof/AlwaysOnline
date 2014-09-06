@@ -17,11 +17,19 @@ public class AOListener implements Listener{
 	
 	private Pattern pat = null;
 	
-	public AOListener(Database db){
+	private final String kick_invalid_name;
+	private final String kick_not_same_ip;
+	private final String kick_new_player;
+	
+	public AOListener(String invalid, String kick_ip, String kick_new, Database db){
 		
 		this.db = db;
 		
 		this.pat = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");//The regex to verify usernames
+		
+		this.kick_invalid_name = invalid;
+		this.kick_not_same_ip = kick_ip;
+		this.kick_new_player = kick_new;
 		
 	}
 	
@@ -55,13 +63,13 @@ public class AOListener implements Listener{
 			
 			if(event.getName().length() > 16){
 				
-				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Invalid username. Hacking?");
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_invalid_name);
 				
 				return;
 				
 			}else if(!this.validate(event.getName())){
 				
-				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Invalid username. Hacking?");
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_invalid_name);
 				
 				return;
 				
@@ -75,7 +83,7 @@ public class AOListener implements Listener{
 			
 			if(ip == null){//If null the player connecting is new
 				
-				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "We can not let you login because the mojang servers are offline!");
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_new_player);
 				
 				Bukkit.getLogger().info("[AlwaysOnline] Denied " + event.getName() + " from logging in cause their ip [" + ip + "] has never connected to this server before!");
 				
@@ -93,7 +101,7 @@ public class AOListener implements Listener{
 						
 					Bukkit.getLogger().info("[AlwaysOnline] Denied " + event.getName() + " from logging in cause their ip [" + ip + "] does not match their last ip!");
 						
-					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "We can't let you in since you're not on the same computer you logged on before!");
+					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_not_same_ip);
 						
 				}
 			

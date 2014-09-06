@@ -20,13 +20,21 @@ public class AOListener implements Listener{
 
 	private Database db;
 	
-	private Pattern pat = null;
+	private final Pattern pat;
 	
-	public AOListener(Database db){
+	private final String kick_invalid_name;
+	private final String kick_not_same_ip;
+	private final String kick_new_player;
+	
+	public AOListener(String invalid, String kick_ip, String kick_new, Database db){
 		
 		this.db = db;
 		
 		this.pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");//The regex to verify usernames
+		
+		this.kick_invalid_name = invalid;
+		this.kick_not_same_ip = kick_ip;
+		this.kick_new_player = kick_new;
 		
 	}
 	
@@ -42,7 +50,7 @@ public class AOListener implements Listener{
 			
 			if(event.getConnection().getName().length() > 16){
 				
-				event.setCancelReason("Invalid username. Hacking?");
+				event.setCancelReason(this.kick_invalid_name);
 				
 				event.setCancelled(true);
 				
@@ -50,7 +58,7 @@ public class AOListener implements Listener{
 				
 			}else if(!this.validate(event.getConnection().getName())){
 				
-				event.setCancelReason("Invalid username. Hacking?");
+				event.setCancelReason(this.kick_invalid_name);
 				
 				event.setCancelled(true);
 				
@@ -70,7 +78,7 @@ public class AOListener implements Listener{
 			
 			if(ip == null){//If null the player connecting is new
 				
-				event.setCancelReason("We can not let you login because the mojang servers are offline!");
+				event.setCancelReason(this.kick_new_player);
 				
 				event.setCancelled(true);
 				
@@ -90,7 +98,7 @@ public class AOListener implements Listener{
 					
 					handler.setOnlineMode(true);
 						
-					event.setCancelReason("We can't let you in since you're not on the same computer you logged on before!");
+					event.setCancelReason(this.kick_not_same_ip);
 						
 					event.setCancelled(true);
 						
