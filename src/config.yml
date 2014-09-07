@@ -36,7 +36,7 @@ message-broadcast-online: '&c&lMojang servers are back online and all services a
 message-motd-offline: '&eMojang servers are down,.newline.&ebut you can still connect!'
 
 #The message to display when a user attempts to login while the mojang servers are offline, but their IP does not match.
-message-kick-ip: 'We can not let you in since you're not on the same computer you logged on before!'
+message-kick-ip: 'We can not let you in since you are not on the same computer you logged on before!'
 
 #The message to display when a user is new and logs in while mojang servers are offline.
 message-kick-new: 'We can not let you login because the mojang servers are offline!'
