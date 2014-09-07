@@ -245,7 +245,17 @@ public class AlwaysOnline extends JavaPlugin{
 										
 									}
 									
-									getLogger().info("Mojang servers are now offline!");
+								}
+								
+								getLogger().info("Mojang servers are now offline!");
+								
+								for(Player p : Bukkit.getOnlinePlayers()){
+								
+									if(p.hasPermission("alwaysonline.notify")){
+										
+										p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers have been detected offline!");
+										
+									}
 									
 								}
 								
@@ -276,7 +286,17 @@ public class AlwaysOnline extends JavaPlugin{
 									
 								}
 								
-								getLogger().info("Mojang servers are now online!");
+							}
+							
+							getLogger().info("Mojang servers are now online!");
+							
+							for(Player p : Bukkit.getOnlinePlayers()){
+								
+								if(p.hasPermission("alwaysonline.notify")){
+									
+									p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now online!");
+									
+								}
 								
 							}
 							
