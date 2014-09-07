@@ -17,7 +17,11 @@ public class XpawManager {
 
 	private static final String AGENT = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2";
 	
-	public XpawManager(){
+	private boolean fire_on_slow;
+	
+	public XpawManager(boolean fire_on_slow){
+		
+		this.fire_on_slow = fire_on_slow;
 		
 		//Hope this doesn't conflict with other plugins...which it should not...
 		//Since most plugins don't care about http cookies
@@ -115,7 +119,11 @@ public class XpawManager {
 				
 			}
 			
-			if(res.contains("\"session\":{\"status\":\"up\",\"title\":\"online\"") || res.contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")){
+			if(res.contains("\"session\":{\"status\":\"up\",\"title\":\"online\"")){
+				
+				return true;
+				
+			}else if(this.fire_on_slow && res.contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")){
 				
 				return true;
 				

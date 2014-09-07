@@ -18,9 +18,11 @@ database-type: 1
 
 #How many times should we check to confirm if the session servers are down?
 down-amount: 2
-
 # "I would add a setting for how many times to check before we call the session servers offline.
 #  Like check 5 times, every second defined in check-interval, and if they are down on all times declare the session servers offline." - jeff142
+
+#Set this to true if you want AlwaysOnline to go in mojang offline mode when the servers have a slow response.
+offline-quite-slow: false
 
 #Message to broadcast when mojang servers are offline. Set to null to disable.
 

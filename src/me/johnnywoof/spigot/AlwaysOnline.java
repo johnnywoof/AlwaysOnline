@@ -133,7 +133,7 @@ public class AlwaysOnline extends JavaPlugin{
 			
 			this.getLogger().info("Getting HTTP cookies for xpaw...");
 				
-			this.xm = new XpawManager();
+			this.xm = new XpawManager(yml.getBoolean("offline-quite-slow"));
 			
 			this.getLogger().info("Finished getting cookies!");
 			
