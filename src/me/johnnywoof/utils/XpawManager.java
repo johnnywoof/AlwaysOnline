@@ -123,9 +123,9 @@ public class XpawManager {
 				
 				return true;
 				
-			}else if(this.fire_on_slow && res.contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")){
+			}else if(res.contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")){
 				
-				return true;
+				return !this.fire_on_slow;
 				
 			}else{
 				
