@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import me.johnnywoof.database.Database;
+import me.johnnywoof.database.DatabaseType;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
@@ -18,7 +19,7 @@ import net.md_5.bungee.event.EventPriority;
 
 public class AOListener implements Listener{
 
-	private Database db;
+	private final Database db;
 	
 	private final Pattern pat;
 	
@@ -26,9 +27,17 @@ public class AOListener implements Listener{
 	private final String kick_not_same_ip;
 	private final String kick_new_player;
 	
-	public AOListener(String invalid, String kick_ip, String kick_new, Database db){
+	private AlwaysOnline ao;
+	
+	public AOListener(AlwaysOnline ao, String invalid, String kick_ip, String kick_new, Database db){
 		
 		this.db = db;
+		
+		if(this.db.getType() == DatabaseType.MySQL){
+			
+			this.ao = ao;
+			
+		}
 		
 		this.pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");//The regex to verify usernames
 		
@@ -176,7 +185,40 @@ public class AOListener implements Listener{
 		}else{
 			
 			//If we are not in mojang offline mode, update the player data
-			db.updatePlayer(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), event.getPlayer().getUniqueId());
+			
+			if(db.getType() == DatabaseType.MySQL){
+				
+				final String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
+				final String name = event.getPlayer().getName();
+				final UUID uuid = event.getPlayer().getUniqueId();
+				
+				if(ao != null){
+					
+					//WHYYYYYYYY DO YOU NEED THE PLUGIN INSTANCE?!?!?!
+					//I WANT TO USE LESS DEDOTATED WAM!!!!
+					ao.getProxy().getScheduler().runAsync(ao, new Runnable(){
+
+						@Override
+						public void run() {
+							
+							db.updatePlayer(name, ip, uuid);
+							
+						}
+						
+					});
+					
+				}else{
+					
+					//Fallback method
+					db.updatePlayer(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), event.getPlayer().getUniqueId());
+					
+				}
+				
+			}else{
+				
+				db.updatePlayer(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), event.getPlayer().getUniqueId());
+				
+			}
 			
 		}
 		

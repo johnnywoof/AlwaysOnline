@@ -202,4 +202,9 @@ public class MultiFile implements Database{
 		
 	}
 
+	@Override
+	public DatabaseType getType() {
+		return DatabaseType.MultiFile;
+	}
+
 }

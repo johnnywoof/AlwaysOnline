@@ -64,4 +64,13 @@ public interface Database {
 	 * */
 	public ArrayList<String> getDatabaseDump();
 	
+	/**
+	 * 
+	 * Gets the type of database
+	 * 
+	 * @return The type of database
+	 * 
+	 * */
+	public DatabaseType getType();
+	
 }

@@ -153,7 +153,7 @@ public class AlwaysOnline extends Plugin{
 			
 			//Register our new listener and runnable
 			
-			this.getProxy().getPluginManager().registerListener(this, new AOListener(yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db));
+			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db));
 			
 			yml = null;//I have C instincts......
 

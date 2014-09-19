@@ -301,5 +301,10 @@ public class MySql implements Database{
 		return data;
 		
 	}
+	
+	@Override
+	public DatabaseType getType() {
+		return DatabaseType.MySQL;
+	}
 
 }
