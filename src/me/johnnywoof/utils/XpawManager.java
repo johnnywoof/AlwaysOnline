@@ -9,17 +9,27 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Random;
 
 import me.johnnywoof.bungeecord.AlwaysOnline;
 import net.md_5.bungee.api.ProxyServer;
 
 public class XpawManager {
 
-	private static final String AGENT = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2";
+	private final String AGENT;
 	
 	private boolean fire_on_slow;
 	
 	public XpawManager(boolean fire_on_slow){
+		
+		//Xpaw banning user agents....
+		Random rand = new Random();
+		
+		this.AGENT = "Mozilla/5." + rand.nextInt(5) + " (Macintosh; U; Intel Mac OS X 10." + rand.nextInt(5) + "; en-US; rv:1.9.2." + rand.nextInt(2) + ") Gecko/20100316 Firefox/" + (rand.nextInt(1) + 2) + "." + rand.nextInt(6) + "." + rand.nextInt(2) + "";
+		
+		rand = null;
 		
 		this.fire_on_slow = fire_on_slow;
 		
@@ -52,6 +62,16 @@ public class XpawManager {
 			if(code != 200){
 				
 				ProxyServer.getInstance().getLogger().warning("[AlwaysOnline] xpaw returned http code " + code + " for http://xpaw.ru/mcstatus/!");
+				
+			}
+			
+			if(AlwaysOnline.debug){
+				
+				for(Entry<String, List<String>> en : con.getRequestProperties().entrySet()){
+					
+					System.out.println(en.getKey() + ": " + en.getValue().toString());
+					
+				}
 				
 			}
 			
