@@ -48,6 +48,16 @@ message-kick-invalid: 'Invalid username. Hacking?'
 debug: false
 
 ##########################################
+#              Xpaw
+#             Section
+##########################################
+
+#This is the url where alwaysonline will get random user agents from when using xpaw
+#If you want to host the php file yourself, which is recommended, unzip this jar file
+#By using a program like WinRar and host the agent.php file inside. Then set the new url below
+useragent-url: 'http://alwaysonline.net84.net/agent.php'
+
+##########################################
 #    Mysql Database Information
 #    Only edit if using mysql
 ##########################################
@@ -63,4 +73,4 @@ database-username: 'root'
 database-password: 'password'
 
 #Don't change this please!
-config_version: 2
+config_version: 3

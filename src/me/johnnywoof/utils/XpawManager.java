@@ -11,25 +11,63 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Random;
 
 import me.johnnywoof.bungeecord.AlwaysOnline;
 import net.md_5.bungee.api.ProxyServer;
 
 public class XpawManager {
 
-	private final String AGENT;
+	private String AGENT;
 	
 	private boolean fire_on_slow;
 	
-	public XpawManager(boolean fire_on_slow){
+	public XpawManager(String url, boolean fire_on_slow){
 		
-		//Xpaw banning user agents....
-		Random rand = new Random();
+		URL obj;
+		HttpURLConnection con;
 		
-		this.AGENT = "Mozilla/5." + rand.nextInt(5) + " (Macintosh; U; Intel Mac OS X 10." + rand.nextInt(5) + "; en-US; rv:1.9.2." + rand.nextInt(2) + ") Gecko/20100316 Firefox/" + (rand.nextInt(1) + 2) + "." + rand.nextInt(6) + "." + rand.nextInt(2) + "";
+		ProxyServer.getInstance().getLogger().info("[AlwaysOnline] Fetching user agent from " + url + ".....");
 		
-		rand = null;
+		//Get the random user agent
+		try{
+			
+			obj = new URL(url);
+			con = (HttpURLConnection) obj.openConnection();
+	 
+			// optional default is GET
+			con.setRequestMethod("GET");
+	 
+			//add request header
+			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.0; en-US; rv:1.9.2.20) Gecko/20121120 Firefox/3.8");//Yet another agent
+	 
+			BufferedReader in = new BufferedReader(
+			        new InputStreamReader(con.getInputStream()));
+			
+			AGENT = in.readLine().trim().replaceAll("[^\\x00-\\x7F]", "");//Regex to remove weird characters
+			
+			in.close();
+			
+			int code = con.getResponseCode();
+			
+			if(code != 200){
+				
+				ProxyServer.getInstance().getLogger().warning("[AlwaysOnline] Custom url (" + url + ") returned http code " + code + "!");
+				
+			}else{
+				
+				ProxyServer.getInstance().getLogger().info("[AlwaysOnline] Random user-agent is \"" + AGENT + "\"!");
+				
+			}
+			
+			con.disconnect();
+		
+		}catch(IOException e){
+			
+			e.printStackTrace();
+			//Fallback user-agent
+			AGENT = "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 6.0; Trident/5.0)";
+			
+		}
 		
 		this.fire_on_slow = fire_on_slow;
 		
@@ -46,8 +84,8 @@ public class XpawManager {
 		
 		try{
 			
-			URL obj = new URL("http://xpaw.ru/mcstatus/");
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			obj = new URL("http://xpaw.ru/mcstatus/");
+			con = (HttpURLConnection) obj.openConnection();
 	 
 			// optional default is GET
 			con.setRequestMethod("GET");
@@ -94,6 +132,9 @@ public class XpawManager {
 			e.printStackTrace();
 			
 		}
+		
+		obj = null;
+		con = null;
 		
 	}
 	

@@ -34,8 +34,13 @@ public class AlwaysOnline extends JavaPlugin{
 	
 	public void onEnable(){
 		
+		this.getLogger().info("AlwaysOnline does not support spigot yet :(");
+		this.getLogger().info("If you have bungeecord installed, use this as a bungeecord plugin!");
+		
+		this.getServer().getPluginManager().disablePlugin(this);
+		
 		//Init the plugin
-		this.reload();
+		//this.reload();
 		
 	}
 	
@@ -47,32 +52,6 @@ public class AlwaysOnline extends JavaPlugin{
 	public void reload(){
 		
 		this.getLogger().info("Loading AlwaysOnline on spigot. [" + this.getServer().getVersion() + "]");
-		
-		/*String version = System.getProperty("java.version");
-		
-	    int pos = 0, count = 0;
-	    
-	    for ( ; pos<version.length() && count < 2; pos ++) {
-	    	
-	        if (version.charAt(pos) == '.') count ++;
-	        
-	    }
-	    
-	    double jv = Double.parseDouble (version.substring (0, pos));
-	    
-	    if(jv >= 1.7){
-	    
-	    	this.getLogger().info("Detected java version is OK: " + jv);
-	    
-	    }else{
-	    	
-	    	this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-			this.getLogger().warning("Java 7 is required to run AlwaysOnline in Spigot!");
-			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-			this.getServer().getPluginManager().disablePlugin(this);
-			return;
-	    	
-	    }*/
 		
 		if(this.isBungeecordEnabled()){
 			
@@ -114,6 +93,17 @@ public class AlwaysOnline extends JavaPlugin{
 		
 		FileConfiguration yml = this.getConfig();
 		
+		if(yml.getInt("config_version", 0) < 3){
+			
+			this.getLogger().warning("*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+			this.getLogger().warning("Your configuration file is out of date!");
+			this.getLogger().warning("Please consider deleting it for a fresh new generated copy!");
+			this.getLogger().warning("Once done, do /alwaysonline reload");
+			this.getLogger().warning("*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+			return;
+			
+		}
+		
 		final int cm = yml.getInt("session-check-mode");
 		
 		if(cm == 1){
@@ -131,11 +121,11 @@ public class AlwaysOnline extends JavaPlugin{
 			//Set the xm field
 			this.xm = null;
 			
-			this.getLogger().info("Getting HTTP cookies for xpaw...");
-				
-			this.xm = new XpawManager(yml.getBoolean("offline-quite-slow"));
+			this.getLogger().info("Getting HTTP cookies and random user agent for xpaw...");
 			
-			this.getLogger().info("Finished getting cookies!");
+			this.xm = new XpawManager(yml.getString("useragent-url"), yml.getBoolean("offline-quite-slow"));
+			
+			this.getLogger().info("Finished getting the data!");
 			
 		}
 		

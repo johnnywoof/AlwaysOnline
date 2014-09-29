@@ -71,6 +71,17 @@ public class AlwaysOnline extends Plugin{
 			//Why is this aint in the javadocs?
 			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.getConfig());
 		
+			if(yml.getInt("config_version", 0) < 3){
+				
+				this.getLogger().warning("*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+				this.getLogger().warning("Your configuration file is out of date!");
+				this.getLogger().warning("Please consider deleting it for a fresh new generated copy!");
+				this.getLogger().warning("Once done, do /alwaysonline reload");
+				this.getLogger().warning("*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+				return;
+				
+			}
+			
 			final int cm = yml.getInt("session-check-mode");
 			
 			if(cm == 1){
@@ -88,11 +99,11 @@ public class AlwaysOnline extends Plugin{
 				//Set the xm field
 				this.xm = null;
 				
-				this.getLogger().info("Getting HTTP cookies for xpaw...");
+				this.getLogger().info("Getting HTTP cookies and random user agent for xpaw...");
 					
-				this.xm = new XpawManager(yml.getBoolean("offline-quite-slow"));
+				this.xm = new XpawManager(yml.getString("useragent-url"), yml.getBoolean("offline-quite-slow"));
 				
-				this.getLogger().info("Finished getting cookies!");
+				this.getLogger().info("Finished getting the data!");
 				
 			}
 			
