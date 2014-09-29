@@ -70,7 +70,7 @@ public class MySql implements Database{
 		    
 		    if(!this.doesTableExist("always_online")){
 		    	
-		    	st.executeUpdate("CREATE TABLE IF NOT EXISTS always_online (`name` varchar(16), `ip` varchar(40), `uuid` varchar(50))");
+		    	st.executeUpdate("CREATE TABLE IF NOT EXISTS always_online (`name` varchar(16), `ip` char(15), `uuid` char(36))");
 		    	st.executeUpdate("ALTER TABLE always_online ADD INDEX (`name`)");
 		    	
 		    }
