@@ -9,7 +9,6 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -98,7 +97,7 @@ public class XpawManager {
 			
 		}
 		
-		ProxyServer.getInstance().getLogger().info("[AlwaysOnline] Finished loading in " + new DecimalFormat("0.00").format(((System.currentTimeMillis() - start) / 1000)) + " seconds!");
+		ProxyServer.getInstance().getLogger().info("[AlwaysOnline] Finished loading in " + (System.currentTimeMillis() - start) + " milliseconds!");
 		
 	}
 	
