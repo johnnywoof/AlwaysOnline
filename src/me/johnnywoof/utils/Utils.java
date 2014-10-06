@@ -99,6 +99,8 @@ public class Utils {
 	 * */
 	public static void saveDefaultConfig(File datafolder){
 		
+		//Was about to say "Make this method work with Java 6"....but realized bungeecord required Java 7 to run!
+		
 		if (!datafolder.exists()) {
             datafolder.mkdir();
         }

@@ -194,8 +194,6 @@ public class AOListener implements Listener{
 				
 				if(ao != null){
 					
-					//WHYYYYYYYY DO YOU NEED THE PLUGIN INSTANCE?!?!?!
-					//I WANT TO USE LESS DEDOTATED WAM!!!!
 					ao.getProxy().getScheduler().runAsync(ao, new Runnable(){
 
 						@Override

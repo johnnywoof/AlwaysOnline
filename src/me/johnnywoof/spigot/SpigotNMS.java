@@ -131,9 +131,6 @@ public class SpigotNMS {
 		
 		try {
 			
-			//I must say, they did a really good job attempting to prevent reflection
-			//But they are no match for the master johnnywoof!
-			
 			//Set the vanilla online mode
 			Class<?> c = Class.forName(ver + ".MinecraftServer");
 			
