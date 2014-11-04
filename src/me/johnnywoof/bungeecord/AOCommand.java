@@ -27,7 +27,17 @@ public class AOCommand extends Command{
 			if(args[0].equalsIgnoreCase("toggle")){
 				
 				AlwaysOnline.mojangonline = !AlwaysOnline.mojangonline;
-				
+
+                if(!AlwaysOnline.mojangonline){
+
+                    ao.disabled = true;
+
+                }else{
+
+                    ao.disabled = false;
+
+                }
+
 				sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Mojang offline mode is now " + ((!AlwaysOnline.mojangonline ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled")) + ChatColor.GOLD + "!"));
 				
 			}else if(args[0].equalsIgnoreCase("disable")){

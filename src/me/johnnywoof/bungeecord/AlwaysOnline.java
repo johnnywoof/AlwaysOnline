@@ -1,8 +1,5 @@
 package me.johnnywoof.bungeecord;
 
-import java.io.File;
-import java.io.IOException;
-
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
 import me.johnnywoof.database.MySql;
@@ -14,6 +11,9 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 
 public class AlwaysOnline extends Plugin{
 
@@ -165,8 +165,6 @@ public class AlwaysOnline extends Plugin{
 			//Register our new listener and runnable
 			
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db));
-			
-			yml = null;//I have C instincts......
 
 			this.getProxy().getScheduler().runAsync(this, new Runnable(){//md_5 plz add async timer thx
 
