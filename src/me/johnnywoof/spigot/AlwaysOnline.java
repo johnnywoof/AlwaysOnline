@@ -1,14 +1,10 @@
 package me.johnnywoof.spigot;
 
-import java.io.File;
-import java.io.IOException;
-
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
 import me.johnnywoof.database.MySql;
 import me.johnnywoof.utils.Utils;
 import me.johnnywoof.utils.XpawManager;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -19,6 +15,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 public class AlwaysOnline extends JavaPlugin{
 
@@ -64,7 +63,7 @@ public class AlwaysOnline extends JavaPlugin{
 			
 		}
 		
-		//I NEED A INITUUIDEVENT!!
+		/*//I NEED A INITUUIDEVENT!!
 		if(org.spigotmc.SpigotConfig.saveUserCacheOnStopOnly){
 			
 			this.getLogger().warning("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
@@ -74,7 +73,7 @@ public class AlwaysOnline extends JavaPlugin{
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
 			
-		}
+		}*/
 		
 		if(this.db != null){//Close existing open database connections on reload
 			
@@ -456,7 +455,7 @@ public class AlwaysOnline extends JavaPlugin{
 		
 		for(String l : data){
 			
-			String[] d = l.split("§");
+			String[] d = l.split("ï¿½");
 			
 			if(index == size || index == 0){
 			
