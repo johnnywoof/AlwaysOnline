@@ -191,11 +191,9 @@ public class AlwaysOnline extends JavaPlugin{
 		
 		this.getServer().getPluginManager().registerEvents(new AOListener(yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db), this);
 		
-		yml = null;
-		
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
 
-			int downamount = 0;
+			int downamount;
 			
 			@Override
 			public void run() {

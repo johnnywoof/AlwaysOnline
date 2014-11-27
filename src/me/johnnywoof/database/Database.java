@@ -8,7 +8,11 @@ public interface Database {
 	/**
 	 * 
 	 * Initialize the database (currently mysql for now)
-	 * @param The configuration file
+	 * @param host The host
+     * @param port The port
+     * @param databasename The database name
+     * @param username The username
+     * @param password The database password
 	 * 
 	 * */
 	public void init(String host, int port, String databasename, String username, String password);
@@ -24,7 +28,7 @@ public interface Database {
 	/**
 	 * 
 	 * Returns the UUID of the player name from the database
-	 * @param The player's name
+	 * @param name The player's name
 	 * @return The player's UUID from database
 	 * 
 	 * */
@@ -33,7 +37,7 @@ public interface Database {
 	/**
 	 * 
 	 * Returns the IP address of the player name from the database
-	 * @param The player's name
+	 * @param name The player's name
 	 * @return The player's IP from database
 	 * 
 	 * */
@@ -42,9 +46,9 @@ public interface Database {
 	/**
 	 * 
 	 * Updates the player data in the database
-	 * @param The player's name
-	 * @param The player's ip
-	 * @param The player's UUID
+	 * @param name The player's name
+	 * @param ip The player's ip
+	 * @param uuid The player's UUID
 	 * 
 	 * */
 	public void updatePlayer(final String name, final String ip, final UUID uuid);
@@ -60,7 +64,7 @@ public interface Database {
 	 * 
 	 * Gets the entire alwaysonline database data and stores it in an arraylist
 	 * 
-	 * @return An arraylist (name§ip§uuid)
+	 * @return An arraylist (name|ip|uuid)
 	 * */
 	public ArrayList<String> getDatabaseDump();
 	

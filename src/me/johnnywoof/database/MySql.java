@@ -1,17 +1,13 @@
 package me.johnnywoof.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 public class MySql implements Database{
 
@@ -22,7 +18,7 @@ public class MySql implements Database{
 	 * Where ~ is the delimiter
 	 * 
 	 * */
-	private final HashMap<String, String> cache = new HashMap<String, String>();
+	private final HashMap<String, String> cache = new HashMap<>();
 	
 	/**
 	 * 
@@ -40,7 +36,7 @@ public class MySql implements Database{
 	@Override
 	public void init(String host, int port, String databasename, String username, String password) {
 		
-		this.reconnectinfo = host + "§" + port + "§" + databasename + "§" + username + "§" + password;//Update our string for auto reconnect
+		this.reconnectinfo = host + "|" + port + "|" + databasename + "|" + username + "|" + password;//Update our string for auto reconnect
 		
 		try {
 			
@@ -236,7 +232,7 @@ public class MySql implements Database{
 	/**
 	 * 
 	 * Determines if a table exists
-	 * @param The table name
+	 * @param tablename The table name
 	 * @return If the table exists
 	 * 
 	 * */
@@ -257,7 +253,7 @@ public class MySql implements Database{
 	 * */
 	private void reconnect(){
 
-		String[] data = this.reconnectinfo.split("§");
+		String[] data = this.reconnectinfo.split("|");
 		
 		this.init(data[0], Integer.parseInt(data[1]), data[2], data[3], data[4]);
 		
@@ -266,7 +262,8 @@ public class MySql implements Database{
 	/**
 	 * 
 	 * Logs a message to the console/file
-	 * @param The message to log (without [AlwaysOnline])
+     * @param level The log level
+	 * @param mes The message to log (without [AlwaysOnline])
 	 * 
 	 * */
 	private void logMessage(Level level, String mes){
@@ -278,7 +275,7 @@ public class MySql implements Database{
 	@Override
 	public ArrayList<String> getDatabaseDump() {
 		
-		ArrayList<String> data = new ArrayList<String>();
+		ArrayList<String> data = new ArrayList<>();
 		
 		try {
 			
@@ -286,7 +283,7 @@ public class MySql implements Database{
 			
 			while(rs.next()){
 				
-				data.add(rs.getString(1) + "§" + rs.getString(2) + "§" + rs.getString(3));
+				data.add(rs.getString(1) + "|" + rs.getString(2) + "|" + rs.getString(3));
 				
 			}
 			

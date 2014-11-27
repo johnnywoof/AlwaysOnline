@@ -1,12 +1,6 @@
 package me.johnnywoof.database;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -156,7 +150,7 @@ public class MultiFile implements Database{
 	@Override
 	public ArrayList<String> getDatabaseDump() {
 		
-		ArrayList<String> data = new ArrayList<String>();
+		ArrayList<String> data = new ArrayList<>();
 		
 		File dir = new File("accounts");
 		
@@ -184,7 +178,7 @@ public class MultiFile implements Database{
 					
 					br.close();
 					
-					data.add(name + "§" + ip + "§" + uuid.toString());
+					data.add(name + "|" + ip + "|" + uuid.toString());
 					
 				}
 				
@@ -195,9 +189,7 @@ public class MultiFile implements Database{
 			e.printStackTrace();
 			
 		}
-		
-		br = null;
-		
+
 		return data;
 		
 	}
