@@ -1,20 +1,15 @@
 package me.johnnywoof.utils;
 
+import me.johnnywoof.bungeecord.AlwaysOnline;
+import net.md_5.bungee.api.ProxyServer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.HttpCookie;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
-
-import me.johnnywoof.bungeecord.AlwaysOnline;
-import net.md_5.bungee.api.ProxyServer;
 
 public class XpawManager {
 
@@ -22,7 +17,7 @@ public class XpawManager {
 
 	private boolean fire_on_slow;
 
-	public XpawManager(String url, boolean fire_on_slow) {
+	public XpawManager(boolean fire_on_slow) {
 
 		long start = System.currentTimeMillis();
 
@@ -166,8 +161,7 @@ public class XpawManager {
 
 				return true;
 
-			} else if (res
-					.contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")) {
+			} else if (res.contains("\"session\":{\"status\":\"problem\",\"title\":\"Quite Slow\"")) {
 
 				return !this.fire_on_slow;
 

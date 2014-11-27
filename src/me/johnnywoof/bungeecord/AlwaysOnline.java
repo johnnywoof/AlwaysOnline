@@ -101,7 +101,7 @@ public class AlwaysOnline extends Plugin{
 				
 				this.getLogger().info("Getting HTTP cookies and random user agent for xpaw...");
 					
-				this.xm = new XpawManager(yml.getString("useragent-url"), yml.getBoolean("offline-quite-slow"));
+				this.xm = new XpawManager(yml.getBoolean("offline-quite-slow"));
 				
 				this.getLogger().info("Finished getting the data!");
 				
