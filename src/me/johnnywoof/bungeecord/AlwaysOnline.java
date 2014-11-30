@@ -107,9 +107,9 @@ public class AlwaysOnline extends Plugin{
 				
 			}
 			
-			final String onlinemes = yml.getString("message-broadcast-online");
+			final String onlinemes = yml.getString("message-broadcast-online").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
 			
-			final String offlinemes = yml.getString("message-broadcast-offline");
+			final String offlinemes = yml.getString("message-broadcast-offline").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
 			
 			final long ct = (yml.getLong("check-interval") * 1000);
 			
@@ -123,7 +123,7 @@ public class AlwaysOnline extends Plugin{
 			
 			int id = yml.getInt("database-type");
 			
-			AlwaysOnline.motdmes = yml.getString("message-motd-offline");
+			AlwaysOnline.motdmes = yml.getString("message-motd-offline").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
 			
 			AlwaysOnline.debug = yml.getBoolean("debug");
 			
@@ -202,7 +202,7 @@ public class AlwaysOnline extends Plugin{
 										
 										if(!offlinemes.equals("null")){
 											
-											getProxy().broadcast(offlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
+											getProxy().broadcast(offlinemes);
 											
 										}
 										
@@ -232,7 +232,7 @@ public class AlwaysOnline extends Plugin{
 									
 									if(!onlinemes.equals("null")){
 										
-										getProxy().broadcast(onlinemes.replaceAll("&", ChatColor.COLOR_CHAR + ""));
+										getProxy().broadcast(onlinemes);
 										
 									}
 									

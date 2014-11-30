@@ -1,12 +1,7 @@
 package me.johnnywoof.bungeecord;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.DatabaseType;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -16,6 +11,10 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class AOListener implements Listener{
 
@@ -85,7 +84,7 @@ public class AOListener implements Listener{
 			//Get last known ip
 			final String lastip = db.getIP(event.getConnection().getName());
 			
-			if(ip == null){//If null the player connecting is new
+			if(lastip == null){//If null the player connecting is new
 				
 				event.setCancelReason(this.kick_new_player);
 				
@@ -130,8 +129,6 @@ public class AOListener implements Listener{
 				ServerPing sp = event.getResponse();
 				
 				String s = AlwaysOnline.motdmes;
-				
-				s = s.replaceAll("&", ChatColor.COLOR_CHAR + "");
 				
 				s = s.replaceAll(".newline.", "\n");
 				
@@ -229,13 +226,7 @@ public class AOListener implements Listener{
 	   */
 	  public boolean validate(String username){
 		  
-		  if(this.pat == null){
-			  
-			  return true;
-			  
-		  }
-		  
-		  return pat.matcher(username).matches();
+		  return this.pat == null || pat.matcher(username).matches();
 
 	  }
 	

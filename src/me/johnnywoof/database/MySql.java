@@ -31,6 +31,7 @@ public class MySql implements Database{
 	
 	//I normally do not do this
 	//Wait. this is used by bungeecord to! hmmmmmm......
+    //Or maybe I'm just failing badly
 	private final Logger log = Logger.getLogger("Minecraft");
 	
 	@Override
