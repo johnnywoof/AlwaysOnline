@@ -4,7 +4,6 @@ import me.johnnywoof.database.Database;
 import me.johnnywoof.database.MultiFile;
 import me.johnnywoof.database.MySql;
 import me.johnnywoof.utils.Utils;
-import me.johnnywoof.utils.XpawManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -26,8 +25,6 @@ public class AlwaysOnline extends Plugin{
 	public boolean disabled = false;
 	
 	private Database db = null;
-	
-	private XpawManager xm = null;
 	
 	public void onEnable(){
 		
@@ -68,7 +65,8 @@ public class AlwaysOnline extends Plugin{
 		
 		try{
 		
-			//Why is this aint in the javadocs?
+			//Why is this is this not in the javadocs?
+			//OR IS IT?!?!
 			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.getConfig());
 		
 			if(yml.getInt("config_version", 0) < 3){
@@ -81,32 +79,7 @@ public class AlwaysOnline extends Plugin{
 				return;
 				
 			}
-			
-			final int cm = yml.getInt("session-check-mode");
-			
-			if(cm == 1){
-				
-				this.getLogger().info("Session check mode will use mojang help support API!");
-				
-			}else if(cm == 2){
-				
-				this.getLogger().info("Session check mode will be doing direct ping tests!");
-				
-			}else{
-				
-				this.getLogger().info("Session check mode will be using xpaw!");
-				
-				//Set the xm field
-				this.xm = null;
-				
-				this.getLogger().info("Getting HTTP cookies and random user agent for xpaw...");
-					
-				this.xm = new XpawManager(yml.getBoolean("offline-quite-slow"));
-				
-				this.getLogger().info("Finished getting the data!");
-				
-			}
-			
+
 			final String onlinemes = yml.getString("message-broadcast-online").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
 			
 			final String offlinemes = yml.getString("message-broadcast-offline").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
@@ -115,7 +88,7 @@ public class AlwaysOnline extends Plugin{
 			
 			if(ct < 30000){
 				
-				this.getLogger().warning("WARNING! Your check-interval is less than 30 seconds, this can get your IP banned on various sites!");
+				this.getLogger().warning("Your check-interval is less than 30 seconds, please set it to a higher number!");
 				
 			}
 			
@@ -149,7 +122,7 @@ public class AlwaysOnline extends Plugin{
 			
 			this.getLogger().info("Database is ready to go!");
 			
-			if(ct == -1 || cm == -1){
+			if(ct == -1){
 				
 				this.getLogger().severe("Negative number!");
 				return;
@@ -177,20 +150,8 @@ public class AlwaysOnline extends Plugin{
 					while(true){
 						
 						if(!disabled){
-						
-							boolean online;
 							
-							if(cm == 1 || cm == 2){
-								
-								online = Utils.isMojangOnline(getProxy().getName(), cm);
-								
-							}else{
-									
-								online = xm.isXpawClaimingOnline();
-								
-							}
-							
-							if(!online){
+							if(!Utils.isSessionServerOnline()){
 								
 								downamount = downamount + 1;
 								
