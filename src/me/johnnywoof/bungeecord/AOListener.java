@@ -20,7 +20,7 @@ public class AOListener implements Listener{
 
 	private final Database db;
 	
-	private final Pattern pat;
+	private final Pattern pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");//The regex to verify usernames;
 	
 	private final String kick_invalid_name;
 	private final String kick_not_same_ip;
@@ -37,8 +37,6 @@ public class AOListener implements Listener{
 			this.ao = ao;
 			
 		}
-		
-		this.pat = Pattern.compile("^[a-zA-Z0-9_-]{1,16}$");//The regex to verify usernames
 		
 		this.kick_invalid_name = invalid;
 		this.kick_not_same_ip = kick_ip;

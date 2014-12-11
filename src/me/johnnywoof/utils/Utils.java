@@ -17,6 +17,7 @@ public class Utils {
 
 		try{
 
+            //Re-use the socket instance?
 			new Socket("sessionserver.mojang.com", 443).close();
 
 			return true;
