@@ -1,6 +1,7 @@
 package me.johnnywoof.database;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class MySql implements Database{
 				
 				return n;
 				
-			}catch (CommunicationsException e){
+			}catch (CommunicationsException | MySQLNonTransientConnectionException e){
 				
 				this.logMessage(Level.INFO, "Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
 				this.reconnect();
@@ -157,7 +158,7 @@ public class MySql implements Database{
 				
 				return ip;
 				
-			}catch (CommunicationsException e){
+			}catch (CommunicationsException | MySQLNonTransientConnectionException e){
 				
 				this.logMessage(Level.INFO, "Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
 				this.reconnect();
@@ -186,7 +187,7 @@ public class MySql implements Database{
 			
 			this.st.executeUpdate("INSERT INTO always_online (name, ip, uuid) VALUES ('" + name.replaceAll("'", "") + "', '" + ip.replaceAll("'", "") + "', '" + uuid.toString().replaceAll("'", "") + "');");
 			
-		}catch (CommunicationsException e){
+		}catch (CommunicationsException | MySQLNonTransientConnectionException e){
 			
 			this.logMessage(Level.INFO, "Lost connection to mysql database, reconnecting! [" + e.getMessage() + "]");
 			this.reconnect();
