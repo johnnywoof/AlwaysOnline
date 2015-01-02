@@ -18,6 +18,7 @@ public class Utils {
 		try{
 
             //Re-use the socket instance?
+            //Actually it might not be possible. At least we are closing it.
 			new Socket("sessionserver.mojang.com", 443).close();
 
 			return true;
@@ -33,7 +34,7 @@ public class Utils {
 	/**
 	 * 
 	 * Saves the default plugin configuration file from the jar
-	 * @param The datafolder
+	 * @param datafolder The plugin data folder
 	 * 
 	 * */
 	public static void saveDefaultConfig(File datafolder){

@@ -5,14 +5,22 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class AOCommand extends Command{
-	
-	private AlwaysOnline ao;
+
+	private final File state_path;
+
+	private final AlwaysOnline ao;
 	
 	public AOCommand(AlwaysOnline ao) {
         super("alwaysonline", "alwaysonline.usage", "ao");
         
         this.ao = ao;
+
+		this.state_path = new File(ao.getDataFolder() + File.separator + "state.txt");
         
     }
  
@@ -28,15 +36,7 @@ public class AOCommand extends Command{
 				
 				AlwaysOnline.mojangonline = !AlwaysOnline.mojangonline;
 
-                if(!AlwaysOnline.mojangonline){
-
-                    ao.disabled = true;
-
-                }else{
-
-                    ao.disabled = false;
-
-                }
+				ao.disabled = !AlwaysOnline.mojangonline;
 
 				sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Mojang offline mode is now " + ((!AlwaysOnline.mojangonline ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled")) + ChatColor.GOLD + "!"));
 				
@@ -62,6 +62,20 @@ public class AOCommand extends Command{
 				
 				this.displayHelp(sender);
 				
+			}
+
+			try{
+
+				FileWriter w = new FileWriter(state_path);
+
+				w.write(ao.disabled + ":" + AlwaysOnline.mojangonline);
+
+				w.close();
+
+			}catch (IOException e){
+
+				ao.getLogger().warning("Failed to save state. This error is not severe. [" + e.getMessage() + "]");
+
 			}
 			
 		}

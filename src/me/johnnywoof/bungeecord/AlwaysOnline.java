@@ -13,6 +13,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class AlwaysOnline extends Plugin{
 
@@ -134,7 +135,32 @@ public class AlwaysOnline extends Plugin{
 			this.getProxy().getScheduler().cancel(this);
 			
 			this.getProxy().getPluginManager().unregisterListeners(this);
-			
+
+			//Read the state.txt file and assign variables
+
+			File state_file = new File(this.getDataFolder() + File.separator + "state.txt");
+
+			if(state_file.exists()){
+
+				Scanner scan = new Scanner(state_file);
+
+				String data = scan.nextLine();
+
+				scan.close();
+
+				if(data.contains(":")){
+
+					String[] d = data.split(":");
+
+					this.disabled = Boolean.parseBoolean(d[0]);
+					AlwaysOnline.mojangonline = Boolean.parseBoolean(d[1]);
+
+					this.getLogger().info("Successfully loaded previous state variables!");
+
+				}
+
+			}
+
 			//Register our new listener and runnable
 			
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), db));
