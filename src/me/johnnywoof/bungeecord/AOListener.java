@@ -2,6 +2,7 @@ package me.johnnywoof.bungeecord;
 
 import me.johnnywoof.database.Database;
 import me.johnnywoof.database.DatabaseType;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -38,9 +39,9 @@ public class AOListener implements Listener {
 
         }
 
-        this.kick_invalid_name = invalid;
-        this.kick_not_same_ip = kick_ip;
-        this.kick_new_player = kick_new;
+        this.kick_invalid_name = ChatColor.translateAlternateColorCodes('&', invalid);
+        this.kick_not_same_ip = ChatColor.translateAlternateColorCodes('&', kick_ip);
+        this.kick_new_player = ChatColor.translateAlternateColorCodes('&', kick_new);
 
     }
 

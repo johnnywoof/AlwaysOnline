@@ -86,9 +86,9 @@ public class AlwaysOnline extends Plugin {
 
             }
 
-            final String onlinemes = yml.getString("message-broadcast-online").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
+            final String onlinemes = ChatColor.translateAlternateColorCodes('&', yml.getString("message-broadcast-online"));
 
-            final String offlinemes = yml.getString("message-broadcast-offline").replaceAll("&", String.valueOf(ChatColor.COLOR_CHAR));
+            final String offlinemes = ChatColor.translateAlternateColorCodes('&', yml.getString("message-broadcast-offline"));
 
             final long ct = (yml.getLong("check-interval") * 1000);
 
