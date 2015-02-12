@@ -7,41 +7,39 @@ import java.net.Socket;
 
 public class Utils {
 
-	/**
-	 *
-	 * Determines if the session server is online
-	 * @return If the session server is online
-	 *
-	 * */
-	public static boolean isSessionServerOnline(){
+    /**
+     * Determines if the session server is online
+     *
+     * @return If the session server is online
+     */
+    public static boolean isSessionServerOnline() {
 
-		try{
+        try {
 
             //Re-use the socket instance?
             //Actually it might not be possible. At least we are closing it.
-			new Socket("sessionserver.mojang.com", 443).close();
+            new Socket("sessionserver.mojang.com", 443).close();
 
-			return true;
+            return true;
 
-		}catch(IOException e){
+        } catch (IOException e) {
 
-			return false;
+            return false;
 
-		}
+        }
 
-	}
+    }
 
-	/**
-	 * 
-	 * Saves the default plugin configuration file from the jar
-	 * @param datafolder The plugin data folder
-	 * 
-	 * */
-	public static void saveDefaultConfig(File datafolder){
-		
-		//Was about to say "Make this method work with Java 6"....but realized bungeecord required Java 7 to run!
-		
-		if (!datafolder.exists()) {
+    /**
+     * Saves the default plugin configuration file from the jar
+     *
+     * @param datafolder The plugin data folder
+     */
+    public static void saveDefaultConfig(File datafolder) {
+
+        //Was about to say "Make this method work with Java 6"....but realized bungeecord required Java 7 to run!
+
+        if (!datafolder.exists()) {
             datafolder.mkdir();
         }
         File configFile = new File(datafolder, "config.yml");
@@ -56,7 +54,7 @@ public class Utils {
                 e.printStackTrace();
             }
         }
-		
-	}
-	
+
+    }
+
 }

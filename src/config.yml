@@ -1,21 +1,14 @@
 #Welcome to the AlwaysOnline main configuration file!
 
 #The delay to wait between checking to see if mojang is online, in seconds.
-check-interval: 120
+check-interval: 30
 
 #
-# 1 = Multifile: All information will be stored in a lot of small files in a directory, indexed by name
+# 1 = Multifile (This mode is deprecated. Please use FlatFile instead): All information will be stored in a lot of small files in a directory, indexed by name
 # 2 = Mysql: Stores all information in a MySql database
+# 3 = Flatfile: Stores all information in a file
 #
-database-type: 1
-
-#How many times should we check to confirm if the session servers are down?
-down-amount: 2
-# "I would add a setting for how many times to check before we call the session servers offline.
-#  Like check 5 times, every second defined in check-interval, and if they are down on all times declare the session servers offline." - jeff142
-
-#Set this to true if you want AlwaysOnline to go in mojang offline mode when the servers have a slow response.
-offline-quite-slow: false
+database-type: 3
 
 #Message to broadcast when mojang servers are offline. Set to null to disable.
 
@@ -34,11 +27,8 @@ message-kick-ip: 'We can not let you in since you are not on the same computer y
 #The message to display when a user is new and logs in while mojang servers are offline.
 message-kick-new: 'We can not let you login because the mojang servers are offline!'
 
-#The message to display when a user attempts to login with a non-valid minecraft username.
+#The message to display when a user attempts to login with an invalid minecraft username.
 message-kick-invalid: 'Invalid username. Hacking?'
-
-#Set this to true for extra messages used for debugging
-debug: false
 
 ##########################################
 #    Mysql Database Information
@@ -55,5 +45,23 @@ database-username: 'root'
 
 database-password: 'password'
 
+##########################################
+#    Advance configuration
+#    Please only edit if you
+#    know what you are doing.
+##########################################
+
+#The down-amount option is a bit tricky to explain.
+#In alwaysonline, it will run a process every so often to check if the session server are offline.
+#This speed on how often it does it is defined by the check-interval option.
+#If the session servers are offline, we increment an integer variable by one.
+#If the variable reaches the number defined in the down-amount option, we declare the session server to be offline.
+#While offline, the process will then determine if the session servers are online.
+#When the session servers are online again, the variable is reset to zero and awaits until the session server becomes offline again.
+down-amount: 1
+
+#Set this to true for extra messages used for debugging
+debug: false
+
 #Don't change this please!
-config_version: 3
+config_version: 4
