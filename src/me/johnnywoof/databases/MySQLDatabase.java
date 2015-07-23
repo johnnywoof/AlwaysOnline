@@ -1,6 +1,9 @@
 package me.johnnywoof.databases;
 
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
 import me.johnnywoof.PlayerData;
+import net.md_5.bungee.api.ProxyServer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -106,6 +109,19 @@ public class MySQLDatabase implements Database {
 
 				rs.close();
 				preparedStatement.close();
+
+			} catch (CommunicationsException | MySQLNonTransientConnectionException e) {
+
+				ProxyServer.getInstance().getLogger().info("[AlwaysOnline] Lost connection to MySQL database, reconnecting!");
+
+				try {
+
+					this.connect();
+					return this.loadDataFromSQL(username);
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 
 			} catch (SQLException e) {
 
