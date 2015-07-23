@@ -155,7 +155,7 @@ public class AlwaysOnline extends Plugin {
 
 						AlwaysOnline.mojangOnline = true;
 
-						getLogger().info("Mojang is back online!");
+						getLogger().info("Mojang session servers are back online!");
 
 						for (ProxiedPlayer p : getProxy().getPlayers()) {
 
@@ -171,7 +171,7 @@ public class AlwaysOnline extends Plugin {
 
 						AlwaysOnline.mojangOnline = false;
 
-						getLogger().info("Mojang are now offline!");
+						getLogger().info("Mojang session servers are now offline!");
 
 						for (ProxiedPlayer p : getProxy().getPlayers()) {
 
