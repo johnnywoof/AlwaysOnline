@@ -2,9 +2,9 @@ package me.johnnywoof.utils;
 
 import com.google.common.io.ByteStreams;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.URL;
 
 public class Utils {
 
@@ -17,21 +17,16 @@ public class Utils {
 
 		try {
 
-			//Re-use the socket instance?
-			//Actually it might not be possible. At least we are closing it.
+			HttpsURLConnection connection = (HttpsURLConnection) new URL("sessionserver.mojang.com").openConnection();
+			connection.setConnectTimeout(10000);
+			connection.setReadTimeout(10000);
+			connection.setRequestMethod("HEAD");
+			int responseCode = connection.getResponseCode();
+			connection.disconnect();
+			return (200 <= responseCode && responseCode <= 399);
 
-			Socket socket = new Socket();
-
-			socket.connect(new InetSocketAddress("sessionserver.mojang.com", 443), 10000);
-
-			socket.close();
-
-			return true;
-
-		} catch (IOException e) {
-
+		} catch (IOException exception) {
 			return false;
-
 		}
 
 	}
