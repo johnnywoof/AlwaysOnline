@@ -1,5 +1,6 @@
 package me.johnnywoof;
 
+import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -11,6 +12,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -162,6 +164,17 @@ public class AOListener implements Listener {
 				sf = handler.getClass().getDeclaredField("offlineId");
 				sf.setAccessible(true);
 				sf.set(handler, uuid);
+
+				Collection<String> g = this.ao.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getName());
+				g.addAll(this.ao.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getUniqueId().toString()));
+
+				UserConnection userConnection = (UserConnection) event.getPlayer();
+
+				for (String s : g) {
+					userConnection.addGroups(s);
+				}
+
+				this.ao.getLogger().info(event.getPlayer().getName() + " successfully logged in while mojang servers were offline!");
 
 				//ProxyServer.getInstance().getLogger().info("Overriding uuid for " + event.getPlayer().getName() + " to " + uuid.toString() + "! New uuid is " + event.getPlayer().getUniqueId().toString());
 
