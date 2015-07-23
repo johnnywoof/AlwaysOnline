@@ -15,6 +15,23 @@ message-kick-new: 'We can not let you join because the mojang servers are offlin
 #The message to display when a user attempts to login with an invalid minecraft username.
 message-kick-invalid: 'Invalid username. Hacking?'
 
+##########################################
+#    Mysql Database Information
+#    Only edit if using mysql
+##########################################
+
+use_mysql: false
+
+host: '127.0.0.1'
+
+port: 3306
+
+database-name: 'server_database'
+
+database-username: 'root'
+
+database-password: 'password'
+
 #Set this to true for extra messages used for debugging
 debug: false
 

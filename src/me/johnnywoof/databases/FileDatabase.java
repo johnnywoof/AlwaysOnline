@@ -1,4 +1,6 @@
-package me.johnnywoof;
+package me.johnnywoof.databases;
+
+import me.johnnywoof.PlayerData;
 
 import java.io.*;
 import java.util.Map;
@@ -6,13 +8,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-public class Database {
+public class FileDatabase implements Database {
 
 	private final ConcurrentHashMap<String, PlayerData> cache = new ConcurrentHashMap<>();
 
 	private final File savedData;
 
-	public Database(File savedData) {
+	public FileDatabase(File savedData) {
 
 		this.savedData = savedData;
 

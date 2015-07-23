@@ -1,5 +1,7 @@
 package me.johnnywoof;
 
+import me.johnnywoof.databases.Database;
+import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -9,7 +11,6 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +46,7 @@ public class AlwaysOnline extends Plugin {
 
 			try {
 				this.db.saveData();
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
@@ -97,7 +98,7 @@ public class AlwaysOnline extends Plugin {
 
 			AlwaysOnline.debug = yml.getBoolean("debug");
 
-			this.db = new Database(new File(this.getDataFolder(), "playerData.txt"));
+			this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
 
 			this.getLogger().info("Database is ready to go!");
 
@@ -143,6 +144,7 @@ public class AlwaysOnline extends Plugin {
 
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), yml.getString("message-motd-offline")));
 
+			//It appears all scheduled threads are async, interesting.
 			this.getProxy().getScheduler().schedule(this, new Runnable() {
 
 				@SuppressWarnings("deprecation")
@@ -201,11 +203,15 @@ public class AlwaysOnline extends Plugin {
 
 		if (this.db != null) {
 
+			this.getLogger().info("Saving data...");
+
 			try {
 				this.db.saveData();
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
+			this.getLogger().info("Successfully saved the data!");
 
 			this.db.resetCache();
 
