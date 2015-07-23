@@ -126,6 +126,8 @@ public class Database {
 
 		PrintWriter w = new PrintWriter(this.savedData);
 
+		w.println("NEVER EVER EDIT THIS FILE! IF YOU DO SOMETHING WRONG, YOU COULD ACCIDENTALLY OPEN SECURITY EXPLOITS!");
+
 		for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
 
 			w.println(en.getKey() + "|" + en.getValue().ipAddress + "|" + en.getValue().uuid.toString());
