@@ -3,22 +3,7 @@
 #The delay to wait between checking to see if mojang is online, in seconds.
 check-interval: 30
 
-#
-# 1 = Multifile (This mode is deprecated. Please use FlatFile instead): All information will be stored in a lot of small files in a directory, indexed by name
-# 2 = Mysql: Stores all information in a MySql database
-# 3 = Flatfile: Stores all information in a file
-#
-database-type: 3
-
-#Message to broadcast when mojang servers are offline. Set to null to disable.
-
-message-broadcast-offline: '&c&lMojang servers are offline! However you can still login from the same computer to get back on!'
-
-#Message to broadcast when mojang servers are online. Set to null to disable.
-
-message-broadcast-online: '&c&lMojang servers are back online and all services are now normal again!'
-
-#Message for the MOTD to be when mojang servers are offline. Set to null to disable.
+#Message for the MOTD to be when mojang servers are offline. Set to 'null' to disable.
 message-motd-offline: '&eMojang servers are down,.newline.&ebut you can still connect!'
 
 #The message to display when a user attempts to login while the mojang servers are offline, but their IP does not match.
@@ -30,38 +15,8 @@ message-kick-new: 'We can not let you login because the mojang servers are offli
 #The message to display when a user attempts to login with an invalid minecraft username.
 message-kick-invalid: 'Invalid username. Hacking?'
 
-##########################################
-#    Mysql Database Information
-#    Only edit if using mysql
-##########################################
-
-host: 127.0.0.1
-
-port: 3306
-
-database-name: 'server_database'
-
-database-username: 'root'
-
-database-password: 'password'
-
-##########################################
-#    Advance configuration
-#    Please only edit if you
-#    know what you are doing.
-##########################################
-
-#The down-amount option is a bit tricky to explain.
-#In alwaysonline, it will run a process every so often to check if the session server are offline.
-#This speed on how often it does it is defined by the check-interval option.
-#If the session servers are offline, we increment an integer variable by one.
-#If the variable reaches the number defined in the down-amount option, we declare the session server to be offline.
-#While offline, the process will then determine if the session servers are online.
-#When the session servers are online again, the variable is reset to zero and awaits until the session server becomes offline again.
-down-amount: 1
-
 #Set this to true for extra messages used for debugging
 debug: false
 
 #Don't change this please!
-config_version: 4
+config_version: 5

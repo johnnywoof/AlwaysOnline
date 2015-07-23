@@ -3,58 +3,62 @@ package me.johnnywoof.utils;
 import com.google.common.io.ByteStreams;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class Utils {
 
-    /**
-     * Determines if the session server is online
-     *
-     * @return If the session server is online
-     */
-    public static boolean isSessionServerOnline() {
+	/**
+	 * Determines if the session server is online
+	 *
+	 * @return If the session server is online
+	 */
+	public static boolean isSessionServerOnline() {
 
-        try {
+		try {
 
-            //Re-use the socket instance?
-            //Actually it might not be possible. At least we are closing it.
-            new Socket("sessionserver.mojang.com", 443).close();
+			//Re-use the socket instance?
+			//Actually it might not be possible. At least we are closing it.
 
-            return true;
+			Socket socket = new Socket();
 
-        } catch (IOException e) {
+			socket.connect(new InetSocketAddress("sessionserver.mojang.com", 443), 10000);
 
-            return false;
+			socket.close();
 
-        }
+			return true;
 
-    }
+		} catch (IOException e) {
 
-    /**
-     * Saves the default plugin configuration file from the jar
-     *
-     * @param datafolder The plugin data folder
-     */
-    public static void saveDefaultConfig(File datafolder) {
+			return false;
 
-        //Was about to say "Make this method work with Java 6"....but realized bungeecord required Java 7 to run!
+		}
 
-        if (!datafolder.exists()) {
-            datafolder.mkdir();
-        }
-        File configFile = new File(datafolder, "config.yml");
-        if (!configFile.exists()) {
-            try {
-                configFile.createNewFile();
-                try (InputStream is = Utils.class.getResourceAsStream("/config.yml");
-                     OutputStream os = new FileOutputStream(configFile)) {
-                    ByteStreams.copy(is, os);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+	}
 
-    }
+	/**
+	 * Saves the default plugin configuration file from the jar
+	 *
+	 * @param datafolder The plugin data folder
+	 */
+	public static void saveDefaultConfig(File datafolder) {
+
+		if (!datafolder.exists()) {
+			datafolder.mkdir();
+		}
+		File configFile = new File(datafolder, "config.yml");
+		if (!configFile.exists()) {
+			try {
+				configFile.createNewFile();
+				try (InputStream is = Utils.class.getResourceAsStream("/config.yml");
+					 OutputStream os = new FileOutputStream(configFile)) {
+					ByteStreams.copy(is, os);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
 
 }
