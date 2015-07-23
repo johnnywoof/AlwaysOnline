@@ -17,7 +17,7 @@ public class Utils {
 
 		try {
 
-			HttpsURLConnection connection = (HttpsURLConnection) new URL("sessionserver.mojang.com").openConnection();
+			HttpsURLConnection connection = (HttpsURLConnection) new URL("https://sessionserver.mojang.com").openConnection();
 			connection.setConnectTimeout(10000);
 			connection.setReadTimeout(10000);
 			connection.setRequestMethod("HEAD");

@@ -180,6 +180,12 @@ public class AlwaysOnline extends Plugin {
 
 					boolean isOnline = Utils.isSessionServerOnline();
 
+					if (debug) {
+
+						getLogger().info("Utils.isSessionServerOnline() returned " + isOnline);
+
+					}
+
 					if (isOnline && !AlwaysOnline.mojangOnline) {
 
 						AlwaysOnline.mojangOnline = true;

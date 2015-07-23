@@ -35,5 +35,5 @@ database-password: 'password'
 #Set this to true for extra messages used for debugging
 debug: false
 
-#Don't change this please!
+#Please do not change this!
 config_version: 5
