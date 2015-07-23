@@ -178,41 +178,45 @@ public class AlwaysOnline extends Plugin {
 				@Override
 				public void run() {
 
-					boolean isOnline = Utils.isSessionServerOnline();
+					if (!AlwaysOnline.this.disabled) {
 
-					if (debug) {
+						boolean isOnline = Utils.isSessionServerOnline();
 
-						getLogger().info("Utils.isSessionServerOnline() returned " + isOnline);
+						if (debug) {
 
-					}
-
-					if (isOnline && !AlwaysOnline.mojangOnline) {
-
-						AlwaysOnline.mojangOnline = true;
-
-						getLogger().info("Mojang session servers are back online!");
-
-						for (ProxiedPlayer p : getProxy().getPlayers()) {
-
-							if (p.hasPermission("alwaysonline.notify")) {
-
-								p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now online!");
-
-							}
+							getLogger().info("Utils.isSessionServerOnline() returned " + isOnline);
 
 						}
 
-					} else if (!isOnline && AlwaysOnline.mojangOnline) {
+						if (isOnline && !AlwaysOnline.mojangOnline) {
 
-						AlwaysOnline.mojangOnline = false;
+							AlwaysOnline.mojangOnline = true;
 
-						getLogger().info("Mojang session servers are now offline!");
+							getLogger().info("Mojang session servers are back online!");
 
-						for (ProxiedPlayer p : getProxy().getPlayers()) {
+							for (ProxiedPlayer p : getProxy().getPlayers()) {
 
-							if (p.hasPermission("alwaysonline.notify")) {
+								if (p.hasPermission("alwaysonline.notify")) {
 
-								p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now offline!");
+									p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now online!");
+
+								}
+
+							}
+
+						} else if (!isOnline && AlwaysOnline.mojangOnline) {
+
+							AlwaysOnline.mojangOnline = false;
+
+							getLogger().info("Mojang session servers are now offline!");
+
+							for (ProxiedPlayer p : getProxy().getPlayers()) {
+
+								if (p.hasPermission("alwaysonline.notify")) {
+
+									p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now offline!");
+
+								}
 
 							}
 
