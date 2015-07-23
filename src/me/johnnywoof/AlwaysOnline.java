@@ -76,7 +76,7 @@ public class AlwaysOnline extends Plugin {
 			//OR IS IT?!?!
 			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.getConfig());
 
-			if (yml.getInt("config_version", 0) < 5) {
+			if (yml.getInt("config_version", 0) < 4) {
 
 				this.getLogger().warning("*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 				this.getLogger().warning("Your configuration file is out of date!");
