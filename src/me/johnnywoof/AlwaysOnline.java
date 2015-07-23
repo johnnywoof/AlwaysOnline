@@ -2,6 +2,7 @@ package me.johnnywoof;
 
 import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
+import me.johnnywoof.databases.MySQLDatabase;
 import me.johnnywoof.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -12,6 +13,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -96,9 +98,34 @@ public class AlwaysOnline extends Plugin {
 
 			}
 
-			AlwaysOnline.debug = yml.getBoolean("debug");
+			AlwaysOnline.debug = yml.getBoolean("debug", false);
 
-			this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+			if (AlwaysOnline.debug) {
+
+				this.getLogger().info("Debug mode has been enabled!");
+
+			}
+
+			if (yml.getBoolean("use_mysql", false) || yml.getInt("database-type", 0) == 2) {
+
+				this.getLogger().info("Loading MySQL database...");
+
+				try {
+
+					this.db = new MySQLDatabase(yml.getString("host"), yml.getInt("port"), yml.getString("database-name"), yml.getString("database-username"), yml.getString("database-password"));
+
+				} catch (SQLException e) {
+					this.getLogger().severe("Failed to load the MySQL database, falling back to file database.");
+					e.printStackTrace();
+					this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+				}
+
+			} else {
+
+				this.getLogger().info("Loading file database...");
+				this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+
+			}
 
 			this.getLogger().info("Database is ready to go!");
 
