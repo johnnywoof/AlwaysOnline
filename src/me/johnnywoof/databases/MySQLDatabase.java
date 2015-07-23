@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MySQLDatabase implements Database {
 
-	private static final String selectSQLStatement = "SELECT uuid,ip FROM always_online WHERE username = ?";
+	private static final String selectSQLStatement = "SELECT uuid,ip FROM always_online WHERE name = ?";
 	private static final String insertSQLStatement = "INSERT INTO always_online (name,ip,uuid) VALUES(?,?,?)";
 
 	private final String host;
