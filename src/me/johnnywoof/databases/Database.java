@@ -11,8 +11,10 @@ public interface Database {
 
 	void updatePlayer(String username, String ip, UUID uuid);
 
-	void saveData() throws IOException;
-
-	void resetCache();
+	/**
+	 * Saves the data and clears the cache.
+	 * Can be safely ran asynchronously
+	 */
+	void flushCache() throws IOException;
 
 }

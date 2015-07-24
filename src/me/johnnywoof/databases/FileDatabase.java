@@ -88,6 +88,24 @@ public class FileDatabase implements Database {
 
 	}
 
+	public void flushCache() throws IOException {
+
+		PrintWriter w = new PrintWriter(this.savedData);
+
+		w.println("NEVER EVER EDIT THIS FILE! IF YOU DO SOMETHING WRONG, YOU COULD ACCIDENTALLY OPEN SECURITY EXPLOITS!");
+
+		for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
+
+			w.println(en.getKey() + "|" + en.getValue().ipAddress + "|" + en.getValue().uuid.toString());
+
+		}
+
+		w.close();
+
+		this.cache.clear();
+
+	}
+
 	private PlayerData loadPlayerData(String username) throws IOException {
 
 		if (!this.savedData.exists()) {
@@ -119,28 +137,6 @@ public class FileDatabase implements Database {
 		br.close();
 
 		return playerData;
-
-	}
-
-	public void saveData() throws FileNotFoundException {
-
-		PrintWriter w = new PrintWriter(this.savedData);
-
-		w.println("NEVER EVER EDIT THIS FILE! IF YOU DO SOMETHING WRONG, YOU COULD ACCIDENTALLY OPEN SECURITY EXPLOITS!");
-
-		for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
-
-			w.println(en.getKey() + "|" + en.getValue().ipAddress + "|" + en.getValue().uuid.toString());
-
-		}
-
-		w.close();
-
-	}
-
-	public void resetCache() {
-
-		this.cache.clear();
 
 	}
 

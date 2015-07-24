@@ -5,6 +5,7 @@ import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
 import me.johnnywoof.spigot.nms.CustomAuthService;
+import me.johnnywoof.tasks.SynchronizeDatabaseThread;
 import me.johnnywoof.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -191,6 +192,16 @@ public class AlwaysOnline extends JavaPlugin {
 
 		}
 
+		if (this.getConfig().getBoolean("synchronize-database", true)) {
+
+			int minutes = this.getConfig().getInt("synchronize-delay", 10);
+
+			this.getLogger().info("Starting database synchronization task (every " + minutes + " minutes)...");
+
+			this.getServer().getScheduler().runTaskTimerAsynchronously(this, new SynchronizeDatabaseThread(this.db), 20, (minutes * 1200));
+
+		}
+
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
 			@Override
 			public void run() {
@@ -249,14 +260,12 @@ public class AlwaysOnline extends JavaPlugin {
 			this.getLogger().info("Saving data...");
 
 			try {
-				this.db.saveData();
+				this.db.flushCache();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 			this.getLogger().info("Successfully saved the data!");
-
-			this.db.resetCache();
 
 		}
 

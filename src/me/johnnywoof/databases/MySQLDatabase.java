@@ -2,7 +2,6 @@ package me.johnnywoof.databases;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
-import net.md_5.bungee.api.ProxyServer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -13,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MySQLDatabase implements Database {
 
 	private static final String selectSQLStatement = "SELECT uuid,ip FROM always_online WHERE name = ?";
-	private static final String insertSQLStatement = "INSERT INTO always_online (name,ip,uuid) VALUES(?,?,?)";
+	private static final String insertSQLStatement = "INSERT INTO always_online (name,ip,uuid) VALUES(?,?,?) ON DUPLICATE KEY UPDATE ip = VALUES(ip), uuid = VALUES(uuid)";
 
 	private final String host;
 	private final int port;
@@ -111,8 +110,6 @@ public class MySQLDatabase implements Database {
 
 			} catch (CommunicationsException | MySQLNonTransientConnectionException e) {
 
-				ProxyServer.getInstance().getLogger().info("[AlwaysOnline] Lost connection to MySQL database, reconnecting!");
-
 				try {
 
 					this.connect();
@@ -172,13 +169,11 @@ public class MySQLDatabase implements Database {
 	}
 
 	@Override
-	public void saveData() throws IOException {
+	public void flushCache() throws IOException {
 
 		if (this.statement != null) {
 
 			try {
-
-				this.statement.executeUpdate("TRUNCATE always_online");
 
 				PreparedStatement preparedStatement = this.statement.getConnection().prepareStatement(insertSQLStatement);
 
@@ -207,11 +202,6 @@ public class MySQLDatabase implements Database {
 			}
 
 		}
-
-	}
-
-	@Override
-	public void resetCache() {
 
 		this.cache.clear();
 

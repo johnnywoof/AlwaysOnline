@@ -4,6 +4,7 @@ import com.google.common.io.ByteStreams;
 import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
+import me.johnnywoof.tasks.SynchronizeDatabaseThread;
 import me.johnnywoof.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -45,12 +46,11 @@ public class AlwaysOnline extends Plugin {
 		if (this.db != null) {//Close existing open database connections on reload
 
 			try {
-				this.db.saveData();
+				this.db.flushCache();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
-			this.db.resetCache();
 			this.db = null;
 
 		}
@@ -162,6 +162,17 @@ public class AlwaysOnline extends Plugin {
 			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), yml.getString("message-motd-offline", null)));
 
 			//It appears all scheduled threads are async, interesting.
+
+			if (yml.getBoolean("synchronize-database", true)) {
+
+				int minutes = yml.getInt("synchronize-delay", 10);
+
+				this.getLogger().info("Starting database synchronization task (every " + minutes + " minutes)...");
+
+				this.getProxy().getScheduler().schedule(this, new SynchronizeDatabaseThread(this.db), 20, minutes, TimeUnit.MINUTES);
+
+			}
+
 			this.getProxy().getScheduler().schedule(this, new Runnable() {
 
 				@SuppressWarnings("deprecation")
@@ -227,14 +238,12 @@ public class AlwaysOnline extends Plugin {
 			this.getLogger().info("Saving data...");
 
 			try {
-				this.db.saveData();
+				this.db.flushCache();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 			this.getLogger().info("Successfully saved the data!");
-
-			this.db.resetCache();
 
 		}
 
