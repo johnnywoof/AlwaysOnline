@@ -32,8 +32,5 @@ database-username: 'root'
 
 database-password: 'password'
 
-#Set this to true for extra messages used for debugging
-debug: false
-
 #Please do not change this!
 config_version: 5

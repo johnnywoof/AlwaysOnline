@@ -1,9 +1,7 @@
 package me.johnnywoof.utils;
 
-import com.google.common.io.ByteStreams;
-
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.IOException;
 import java.net.URL;
 
 public class Utils {
@@ -27,31 +25,6 @@ public class Utils {
 
 		} catch (IOException exception) {
 			return false;
-		}
-
-	}
-
-	/**
-	 * Saves the default plugin configuration file from the jar
-	 *
-	 * @param datafolder The plugin data folder
-	 */
-	public static void saveDefaultConfig(File datafolder) {
-
-		if (!datafolder.exists()) {
-			datafolder.mkdir();
-		}
-		File configFile = new File(datafolder, "config.yml");
-		if (!configFile.exists()) {
-			try {
-				configFile.createNewFile();
-				try (InputStream is = Utils.class.getResourceAsStream("/config.yml");
-					 OutputStream os = new FileOutputStream(configFile)) {
-					ByteStreams.copy(is, os);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 
 	}

@@ -1,0 +1,9 @@
+name: AlwaysOnline
+version: 5.1
+main: me.johnnywoof.spigot.AlwaysOnline
+author: Johnnywoof
+commands:
+    alwaysonline:
+        description: Base command for always online.
+        usage: /alwaysonline
+        aliases: [ao]

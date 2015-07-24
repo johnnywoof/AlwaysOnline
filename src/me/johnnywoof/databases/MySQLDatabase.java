@@ -2,7 +2,6 @@ package me.johnnywoof.databases;
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
-import me.johnnywoof.PlayerData;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.io.IOException;

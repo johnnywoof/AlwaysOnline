@@ -1,4 +1,4 @@
-package me.johnnywoof;
+package me.johnnywoof.bungee;
 
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ChatColor;
@@ -31,7 +31,7 @@ public class AOListener implements Listener {
 
 		this.ao = ao;
 
-		if ("null".equals(motdOffline)) {
+		if ("null".equals(motdOffline) || motdOffline == null) {
 
 			this.motdOffline = null;
 

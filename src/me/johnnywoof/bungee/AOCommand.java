@@ -1,4 +1,4 @@
-package me.johnnywoof;
+package me.johnnywoof.bungee;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

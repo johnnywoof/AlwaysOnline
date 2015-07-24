@@ -1,7 +1,5 @@
 package me.johnnywoof.databases;
 
-import me.johnnywoof.PlayerData;
-
 import java.io.*;
 import java.util.Map;
 import java.util.UUID;

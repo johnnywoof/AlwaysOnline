@@ -1,4 +1,4 @@
-package me.johnnywoof;
+package me.johnnywoof.databases;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

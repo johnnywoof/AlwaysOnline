@@ -1,5 +1,6 @@
-package me.johnnywoof;
+package me.johnnywoof.bungee;
 
+import com.google.common.io.ByteStreams;
 import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
@@ -11,8 +12,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +21,6 @@ import java.util.regex.Pattern;
 public class AlwaysOnline extends Plugin {
 
 	public static boolean mojangOnline = true;
-
-	public static boolean debug = false;
 
 	public boolean disabled = false;
 
@@ -42,7 +40,7 @@ public class AlwaysOnline extends Plugin {
 	 */
 	public void reload() {
 
-		this.getLogger().info("Loading AlwaysOnline on bungeecord version " + this.getProxy().getVersion());
+		this.getLogger().info("Loading AlwaysOnline " + this.getDescription().getVersion() + " on bungeecord version " + this.getProxy().getVersion());
 
 		if (this.db != null) {//Close existing open database connections on reload
 
@@ -69,7 +67,7 @@ public class AlwaysOnline extends Plugin {
 
 		if (!this.getConfig().exists()) {
 
-			Utils.saveDefaultConfig(this.getDataFolder());
+			this.saveDefaultConfig();
 
 		}
 
@@ -92,17 +90,9 @@ public class AlwaysOnline extends Plugin {
 
 			int ct = yml.getInt("check-interval", 30);
 
-			if (ct < 5) {
+			if (ct < 15) {
 
-				this.getLogger().warning("Your check-interval is less than 5 seconds. This can cause a lot of false positives, so please set it to a higher number!");
-
-			}
-
-			AlwaysOnline.debug = yml.getBoolean("debug", false);
-
-			if (AlwaysOnline.debug) {
-
-				this.getLogger().info("Debug mode has been enabled!");
+				this.getLogger().warning("Your check-interval is less than 15 seconds. This can cause a lot of false positives, so please set it to a higher number!");
 
 			}
 
@@ -169,7 +159,7 @@ public class AlwaysOnline extends Plugin {
 
 			//Register our new listener and runnable
 
-			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), yml.getString("message-motd-offline")));
+			this.getProxy().getPluginManager().registerListener(this, new AOListener(this, yml.getString("message-kick-invalid"), yml.getString("message-kick-ip"), yml.getString("message-kick-new"), yml.getString("message-motd-offline", null)));
 
 			//It appears all scheduled threads are async, interesting.
 			this.getProxy().getScheduler().schedule(this, new Runnable() {
@@ -181,12 +171,6 @@ public class AlwaysOnline extends Plugin {
 					if (!AlwaysOnline.this.disabled) {
 
 						boolean isOnline = Utils.isSessionServerOnline();
-
-						if (debug) {
-
-							getLogger().info("Utils.isSessionServerOnline() returned " + isOnline);
-
-						}
 
 						if (isOnline && !AlwaysOnline.mojangOnline) {
 
@@ -264,6 +248,29 @@ public class AlwaysOnline extends Plugin {
 	private File getConfig() {
 
 		return new File(this.getDataFolder(), "config.yml");
+
+	}
+
+	/**
+	 * Saves the default plugin configuration file from the jar
+	 */
+	public void saveDefaultConfig() {
+
+		if (!this.getDataFolder().exists()) {
+			this.getDataFolder().mkdir();
+		}
+		File configFile = new File(this.getDataFolder(), "config.yml");
+		if (!configFile.exists()) {
+			try {
+				configFile.createNewFile();
+				try (InputStream is = Utils.class.getResourceAsStream("/config.yml");
+					 OutputStream os = new FileOutputStream(configFile)) {
+					ByteStreams.copy(is, os);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 
