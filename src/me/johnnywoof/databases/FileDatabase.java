@@ -99,39 +99,43 @@ public class FileDatabase implements Database {
 
 	public void save() throws Exception {
 
-		BufferedReader br = new BufferedReader(new FileReader(this.savedData));
-
-		String l;
-
 		ArrayList<String> existingLines = new ArrayList<>();
 
-		while ((l = br.readLine()) != null) {
+		if (this.savedData.exists()) {
 
-			existingLines.add(l);
+			BufferedReader br = new BufferedReader(new FileReader(this.savedData));
 
-		}
+			String l;
 
-		br.close();
+			while ((l = br.readLine()) != null) {
 
-		ArrayList<String> toRemove = new ArrayList<>();
+				existingLines.add(l);
 
-		for (String key : this.cache.keySet()) {
+			}
 
-			for (String line : existingLines) {
+			br.close();
 
-				if (line.startsWith(key + "|")) {
+			ArrayList<String> toRemove = new ArrayList<>();
 
-					toRemove.add(line);
+			for (String key : this.cache.keySet()) {
+
+				for (String line : existingLines) {
+
+					if (line.startsWith(key + "|")) {
+
+						toRemove.add(line);
+
+					}
 
 				}
 
 			}
 
+			existingLines.removeAll(toRemove);
+
+			toRemove.clear();
+
 		}
-
-		existingLines.removeAll(toRemove);
-
-		toRemove.clear();
 
 		PrintWriter w = new PrintWriter(this.savedData);
 
