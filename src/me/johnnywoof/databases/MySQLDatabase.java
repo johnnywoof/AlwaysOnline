@@ -175,26 +175,32 @@ public class MySQLDatabase implements Database {
 
 			try {
 
-				PreparedStatement preparedStatement = this.statement.getConnection().prepareStatement(insertSQLStatement);
+				Connection connection = this.statement.getConnection();
 
-				int i = 0;
+				if (connection != null) {
 
-				for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
+					PreparedStatement preparedStatement = connection.prepareStatement(insertSQLStatement);
 
-					preparedStatement.setString(1, en.getKey());
-					preparedStatement.setString(2, en.getValue().ipAddress);
-					preparedStatement.setString(3, en.getValue().uuid.toString());
+					int i = 0;
 
-					preparedStatement.addBatch();
-					i++;
+					for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
 
-					if (i % 1000 == 0 || i == this.cache.size()) {
-						preparedStatement.executeBatch(); // Execute every 1000 items or when full.
+						preparedStatement.setString(1, en.getKey());
+						preparedStatement.setString(2, en.getValue().ipAddress);
+						preparedStatement.setString(3, en.getValue().uuid.toString());
+
+						preparedStatement.addBatch();
+						i++;
+
+						if (i % 1000 == 0 || i == this.cache.size()) {
+							preparedStatement.executeBatch(); // Execute every 1000 items or when full.
+						}
+
 					}
 
-				}
+					preparedStatement.close();
 
-				preparedStatement.close();
+				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
