@@ -191,7 +191,17 @@ public class AOListener implements Listener {
 		} else {
 
 			//If we are not in mojang offline mode, update the player data
-			this.ao.db.updatePlayer(event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), event.getPlayer().getUniqueId());
+
+			final String username = event.getPlayer().getName();
+			final String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
+			final UUID uuid = event.getPlayer().getUniqueId();
+
+			this.ao.getProxy().getScheduler().runAsync(this.ao, new Runnable() {
+				@Override
+				public void run() {
+					AOListener.this.ao.db.updatePlayer(username, ip, uuid);
+				}
+			});
 
 		}
 

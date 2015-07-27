@@ -3,7 +3,6 @@ package me.johnnywoof.databases;
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.Map;
 import java.util.UUID;
@@ -166,51 +165,69 @@ public class MySQLDatabase implements Database {
 
 		this.cache.put(username, new PlayerData(ip, uuid));
 
-	}
-
-	@Override
-	public void flushCache() throws IOException {
-
 		if (this.statement != null) {
 
 			try {
 
-				Connection connection = this.statement.getConnection();
+				PreparedStatement preparedStatement = this.statement.getConnection().prepareStatement(insertSQLStatement);
 
-				if (connection != null) {
+				preparedStatement.setString(1, username);
+				preparedStatement.setString(2, ip);
+				preparedStatement.setString(3, uuid.toString());
 
-					PreparedStatement preparedStatement = connection.prepareStatement(insertSQLStatement);
+				preparedStatement.execute();
 
-					int i = 0;
-
-					for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
-
-						preparedStatement.setString(1, en.getKey());
-						preparedStatement.setString(2, en.getValue().ipAddress);
-						preparedStatement.setString(3, en.getValue().uuid.toString());
-
-						preparedStatement.addBatch();
-						i++;
-
-						if (i % 1000 == 0 || i == this.cache.size()) {
-							preparedStatement.executeBatch(); // Execute every 1000 items or when full.
-						}
-
-					}
-
-					preparedStatement.close();
-
-				}
+				preparedStatement.close();
 
 			} catch (SQLException e) {
+
 				e.printStackTrace();
-				throw new IOException(e);
+
 			}
 
 		}
 
-		this.cache.clear();
+	}
 
+	@Override
+	public void save() throws Exception {
+
+		if (this.statement != null) {
+
+			Connection connection = this.statement.getConnection();
+
+			if (connection != null) {
+
+				PreparedStatement preparedStatement = connection.prepareStatement(insertSQLStatement);
+
+				int i = 0;
+
+				for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
+
+					preparedStatement.setString(1, en.getKey());
+					preparedStatement.setString(2, en.getValue().ipAddress);
+					preparedStatement.setString(3, en.getValue().uuid.toString());
+
+					preparedStatement.addBatch();
+					i++;
+
+					if (i % 1000 == 0 || i == this.cache.size()) {
+						preparedStatement.executeBatch(); // Execute every 1000 items or when full.
+					}
+
+				}
+
+				preparedStatement.close();
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public void resetCache() {
+		this.cache.clear();
 	}
 
 	/**

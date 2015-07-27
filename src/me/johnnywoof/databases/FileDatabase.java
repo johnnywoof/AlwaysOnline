@@ -1,6 +1,7 @@
 package me.johnnywoof.databases;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,13 +87,59 @@ public class FileDatabase implements Database {
 
 		this.cache.put(username, new PlayerData(ip, uuid));
 
+		try {
+
+			this.save();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
-	public void flushCache() throws IOException {
+	public void save() throws Exception {
+
+		BufferedReader br = new BufferedReader(new FileReader(this.savedData));
+
+		String l;
+
+		ArrayList<String> existingLines = new ArrayList<>();
+
+		while ((l = br.readLine()) != null) {
+
+			existingLines.add(l);
+
+		}
+
+		br.close();
+
+		ArrayList<String> toRemove = new ArrayList<>();
+
+		for (String key : this.cache.keySet()) {
+
+			for (String line : existingLines) {
+
+				if (line.startsWith(key + "|")) {
+
+					toRemove.add(line);
+
+				}
+
+			}
+
+		}
+
+		existingLines.removeAll(toRemove);
+
+		toRemove.clear();
 
 		PrintWriter w = new PrintWriter(this.savedData);
 
-		w.println("NEVER EVER EDIT THIS FILE! IF YOU DO SOMETHING WRONG, YOU COULD ACCIDENTALLY OPEN SECURITY EXPLOITS!");
+		for (String line : existingLines) {
+
+			w.println(line);
+
+		}
 
 		for (Map.Entry<String, PlayerData> en : this.cache.entrySet()) {
 
@@ -102,8 +149,11 @@ public class FileDatabase implements Database {
 
 		w.close();
 
-		this.cache.clear();
+	}
 
+	@Override
+	public void resetCache() {
+		this.cache.clear();
 	}
 
 	private PlayerData loadPlayerData(String username) throws IOException {

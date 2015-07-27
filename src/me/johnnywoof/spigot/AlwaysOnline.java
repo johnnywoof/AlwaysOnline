@@ -5,7 +5,6 @@ import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
 import me.johnnywoof.spigot.nms.CustomAuthService;
-import me.johnnywoof.tasks.SynchronizeDatabaseThread;
 import me.johnnywoof.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,7 +29,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 	public boolean disabled = false;
 
-	private Database db = null;
+	public Database db = null;
 
 	private File stateFile;
 
@@ -127,7 +126,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 		this.getLogger().info("Registering listener...");
 
-		this.getServer().getPluginManager().registerEvents(new AOListener(this.db,
+		this.getServer().getPluginManager().registerEvents(new AOListener(this,
 				this.getConfig().getString("message-kick-invalid"), this.getConfig().getString("message-kick-ip"),
 				this.getConfig().getString("message-kick-new")), this);
 
@@ -189,16 +188,6 @@ public class AlwaysOnline extends JavaPlugin {
 		if (ct < 15) {
 
 			this.getLogger().warning("Your check-interval is less than 15 seconds. This can cause a lot of false positives, so please set it to a higher number!");
-
-		}
-
-		if (this.getConfig().getBoolean("synchronize-database", true)) {
-
-			int minutes = this.getConfig().getInt("synchronize-delay", 10);
-
-			this.getLogger().info("Starting database synchronization task (every " + minutes + " minutes)...");
-
-			this.getServer().getScheduler().runTaskTimerAsynchronously(this, new SynchronizeDatabaseThread(this.db), 20, (minutes * 1200));
 
 		}
 
@@ -265,8 +254,8 @@ public class AlwaysOnline extends JavaPlugin {
 			this.getLogger().info("Saving data...");
 
 			try {
-				this.db.flushCache();
-			} catch (IOException e) {
+				this.db.save();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 

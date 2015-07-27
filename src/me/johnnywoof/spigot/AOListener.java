@@ -1,27 +1,26 @@
 package me.johnnywoof.spigot;
 
-import me.johnnywoof.databases.Database;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class AOListener implements Listener {
 
 	private final Pattern pat = Pattern.compile("^[a-zA-Z0-9_-]{2,16}$");//The regex to verify usernames;
 
-	private final Database database;
+	private final AlwaysOnline alwaysOnline;
 	private final String kick_invalid_name;
 	private final String kick_not_same_ip;
 	private final String kick_new_player;
 
-	public AOListener(Database database, String invalid, String kick_ip, String kick_new) {
+	public AOListener(AlwaysOnline alwaysOnline, String invalid, String kick_ip, String kick_new) {
 
-		this.database = database;
+		this.alwaysOnline = alwaysOnline;
 		this.kick_invalid_name = invalid;
 		this.kick_not_same_ip = kick_ip;
 		this.kick_new_player = kick_new;
@@ -45,7 +44,7 @@ public class AOListener implements Listener {
 
 			String ip = event.getAddress().getHostAddress();
 
-			String lastIP = this.database.getIP(username);
+			String lastIP = this.alwaysOnline.db.getIP(username);
 
 			if (lastIP == null) {
 
@@ -59,7 +58,7 @@ public class AOListener implements Listener {
 
 				} else {
 
-					Bukkit.getLogger().info("[AlwaysOnline] " + username + " was successfully authenticated while mojang servers were offline. Connecting IP is " + ip + " and the last authenticated known IP was " + lastIP);
+					this.alwaysOnline.getLogger().info(username + " was successfully authenticated while mojang servers were offline. Connecting IP is " + ip + " and the last authenticated known IP was " + lastIP);
 
 				}
 
@@ -74,9 +73,16 @@ public class AOListener implements Listener {
 
 		if (AlwaysOnline.mojangOnline) {
 
-			this.database.updatePlayer(event.getPlayer().getName(),
-					event.getPlayer().getAddress().getAddress().getHostAddress(),
-					event.getPlayer().getUniqueId());
+			final String username = event.getPlayer().getName();
+			final String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
+			final UUID uuid = event.getPlayer().getUniqueId();
+
+			this.alwaysOnline.getServer().getScheduler().runTaskAsynchronously(this.alwaysOnline, new Runnable() {
+				@Override
+				public void run() {
+					AOListener.this.alwaysOnline.db.updatePlayer(username, ip, uuid);
+				}
+			});
 
 		}
 

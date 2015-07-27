@@ -1,6 +1,5 @@
 package me.johnnywoof.databases;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public interface Database {
@@ -9,12 +8,25 @@ public interface Database {
 
 	UUID getUUID(String username);
 
+	/**
+	 * Caches the information and updates the database.
+	 * Highly recommended to run async
+	 *
+	 * @param username The username
+	 * @param ip       The IP
+	 * @param uuid     The UUID
+	 */
 	void updatePlayer(String username, String ip, UUID uuid);
 
 	/**
-	 * Saves the data and clears the cache.
+	 * Saves the data.
 	 * Can be safely ran asynchronously
 	 */
-	void flushCache() throws IOException;
+	void save() throws Exception;
+
+	/**
+	 * Resets the cache
+	 */
+	void resetCache();
 
 }

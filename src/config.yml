@@ -15,12 +15,6 @@ message-kick-new: 'We can not let you join because the mojang servers are offlin
 #The message to display when a user attempts to login with an invalid minecraft username.
 message-kick-invalid: 'Invalid username. Hacking?'
 
-#If set to true, cached data will be saved and reloaded from the database every 10 minutes. (Or defined in synchronize-delay)
-synchronize-database: true
-
-#The synchronization delay, in minutes. Ignore this setting if synchronize-database is set to false.
-synchronize-delay: 10
-
 ##########################################
 #    Mysql Database Information
 #    Only edit if using mysql
