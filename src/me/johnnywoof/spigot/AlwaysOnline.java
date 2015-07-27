@@ -203,6 +203,9 @@ public class AlwaysOnline extends JavaPlugin {
 		}
 
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
+
+			private boolean previousOnlineState = true;
+
 			@Override
 			public void run() {
 
@@ -210,7 +213,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 					boolean isOnline = Utils.isSessionServerOnline();
 
-					if (isOnline && !AlwaysOnline.mojangOnline) {
+					if ((this.previousOnlineState && isOnline) && !AlwaysOnline.mojangOnline) {
 
 						AlwaysOnline.mojangOnline = true;
 
@@ -226,7 +229,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 						}
 
-					} else if (!isOnline && AlwaysOnline.mojangOnline) {
+					} else if ((!this.previousOnlineState && !isOnline) && AlwaysOnline.mojangOnline) {
 
 						AlwaysOnline.mojangOnline = false;
 
@@ -243,6 +246,8 @@ public class AlwaysOnline extends JavaPlugin {
 						}
 
 					}
+
+					this.previousOnlineState = isOnline;
 
 				}
 

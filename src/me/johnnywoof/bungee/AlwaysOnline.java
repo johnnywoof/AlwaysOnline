@@ -175,6 +175,8 @@ public class AlwaysOnline extends Plugin {
 
 			this.getProxy().getScheduler().schedule(this, new Runnable() {
 
+				private boolean previousOnlineState = true;
+
 				@SuppressWarnings("deprecation")
 				@Override
 				public void run() {
@@ -183,7 +185,7 @@ public class AlwaysOnline extends Plugin {
 
 						boolean isOnline = Utils.isSessionServerOnline();
 
-						if (isOnline && !AlwaysOnline.mojangOnline) {
+						if ((this.previousOnlineState && isOnline) && !AlwaysOnline.mojangOnline) {
 
 							AlwaysOnline.mojangOnline = true;
 
@@ -199,7 +201,7 @@ public class AlwaysOnline extends Plugin {
 
 							}
 
-						} else if (!isOnline && AlwaysOnline.mojangOnline) {
+						} else if ((!this.previousOnlineState && !isOnline) && AlwaysOnline.mojangOnline) {
 
 							AlwaysOnline.mojangOnline = false;
 
@@ -216,6 +218,8 @@ public class AlwaysOnline extends Plugin {
 							}
 
 						}
+
+						this.previousOnlineState = isOnline;
 
 					}
 
@@ -272,7 +276,7 @@ public class AlwaysOnline extends Plugin {
 		if (!configFile.exists()) {
 			try {
 				configFile.createNewFile();
-				try (InputStream is = Utils.class.getResourceAsStream("/config.yml");
+				try (InputStream is = this.getClass().getResourceAsStream("/config.yml");
 					 OutputStream os = new FileOutputStream(configFile)) {
 					ByteStreams.copy(is, os);
 				}

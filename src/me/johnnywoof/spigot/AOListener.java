@@ -39,6 +39,7 @@ public class AOListener implements Listener {
 			if (!this.validate(username)) {
 
 				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_invalid_name);
+				return;
 
 			}
 
