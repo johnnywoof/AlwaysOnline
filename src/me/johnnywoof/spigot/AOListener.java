@@ -28,7 +28,7 @@ public class AOListener implements Listener {
 	}
 
 	//Low priority so that we can go first. ignoreCancelled is set to false to prevent some security concern.
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
 
 		if (!AlwaysOnline.mojangOnline) {
@@ -68,7 +68,7 @@ public class AOListener implements Listener {
 
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler
 	public void onPostLogin(PlayerJoinEvent event) {
 
 		if (AlwaysOnline.mojangOnline) {
