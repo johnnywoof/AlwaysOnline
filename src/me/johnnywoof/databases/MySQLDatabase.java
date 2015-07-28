@@ -169,15 +169,21 @@ public class MySQLDatabase implements Database {
 
 			try {
 
-				PreparedStatement preparedStatement = this.statement.getConnection().prepareStatement(insertSQLStatement);
+				Connection connection = this.statement.getConnection();
 
-				preparedStatement.setString(1, username);
-				preparedStatement.setString(2, ip);
-				preparedStatement.setString(3, uuid.toString());
+				if (connection != null) {
 
-				preparedStatement.execute();
+					PreparedStatement preparedStatement = connection.prepareStatement(insertSQLStatement);
 
-				preparedStatement.close();
+					preparedStatement.setString(1, username);
+					preparedStatement.setString(2, ip);
+					preparedStatement.setString(3, uuid.toString());
+
+					preparedStatement.execute();
+
+					preparedStatement.close();
+
+				}
 
 			} catch (SQLException e) {
 
