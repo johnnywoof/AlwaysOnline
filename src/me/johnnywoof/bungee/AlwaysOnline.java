@@ -6,6 +6,8 @@ import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
 import me.johnnywoof.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -164,6 +166,14 @@ public class AlwaysOnline extends Plugin {
 
 			//It appears all scheduled threads are async, interesting.
 
+			final BaseComponent[] mojangOnlineMessage = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
+					yml.getString("message-mojang-online",
+							"&5[&2AlwaysOnline&5]&a Mojang servers are now online!")));
+
+			final BaseComponent[] mojangOfflineMessage = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
+					yml.getString("message-mojang-offline",
+							"&5[&2AlwaysOnline&5]&a Mojang servers are now offline!")));
+
 			this.getProxy().getScheduler().schedule(this, new Runnable() {
 
 				private boolean previousOnlineState = true;
@@ -186,7 +196,7 @@ public class AlwaysOnline extends Plugin {
 
 								if (p.hasPermission("alwaysonline.notify")) {
 
-									p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now online!");
+									p.sendMessage(mojangOnlineMessage);
 
 								}
 
@@ -202,7 +212,7 @@ public class AlwaysOnline extends Plugin {
 
 								if (p.hasPermission("alwaysonline.notify")) {
 
-									p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now offline!");
+									p.sendMessage(mojangOfflineMessage);
 
 								}
 

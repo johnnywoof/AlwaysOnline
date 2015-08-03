@@ -15,6 +15,12 @@ message-kick-new: 'We can not let you join because the mojang servers are offlin
 #The message to display when a user attempts to login with an invalid minecraft username.
 message-kick-invalid: 'Invalid username. Hacking?'
 
+#The message to display when mojang servers go offline.
+message-mojang-offline: '&5[&2AlwaysOnline&5]&a Mojang servers are now offline!'
+
+#The message to display when mojang servers go back online.
+message-mojang-online: '&5[&2AlwaysOnline&5]&a Mojang servers are now online!'
+
 ##########################################
 #    Mysql Database Information
 #    Only edit if using mysql

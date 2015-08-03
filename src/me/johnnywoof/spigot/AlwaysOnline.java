@@ -191,6 +191,14 @@ public class AlwaysOnline extends JavaPlugin {
 
 		}
 
+		final String mojangOnlineMessage = ChatColor.translateAlternateColorCodes('&',
+				this.getConfig().getString("message-mojang-online",
+						"&5[&2AlwaysOnline&5]&a Mojang servers are now online!"));
+
+		final String mojangOfflineMessage = ChatColor.translateAlternateColorCodes('&',
+				this.getConfig().getString("message-mojang-offline",
+						"&5[&2AlwaysOnline&5]&a Mojang servers are now offline!"));
+
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
 
 			private boolean previousOnlineState = true;
@@ -212,7 +220,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 							if (p.hasPermission("alwaysonline.notify")) {
 
-								p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now online!");
+								p.sendMessage(mojangOnlineMessage);
 
 							}
 
@@ -228,7 +236,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 							if (p.hasPermission("alwaysonline.notify")) {
 
-								p.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "AlwaysOnline" + ChatColor.GOLD + "] " + ChatColor.GREEN + " Mojang servers are now offline!");
+								p.sendMessage(mojangOfflineMessage);
 
 							}
 
