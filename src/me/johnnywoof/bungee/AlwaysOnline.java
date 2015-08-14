@@ -14,9 +14,11 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -58,27 +60,35 @@ public class AlwaysOnline extends Plugin {
 
 		}
 
-		if (!this.getDataFolder().exists()) {
+		try {
 
-			if (!this.getDataFolder().mkdir()) {
+			Path dataFolder = this.getDataFolder().toPath();
+			Path configFile = dataFolder.resolve("config.yml");
 
-				this.getLogger().severe("Failed to create directory " + this.getDataFolder().getAbsolutePath());
+			//Save default configuration
+			if (Files.isDirectory(dataFolder) || dataFolder.toFile().mkdir()) {
+
+				if (Files.notExists(configFile)) {
+
+					InputStream in = this.getClass().getResourceAsStream("/config.yml");
+
+					try {
+
+						Files.write(configFile, ByteStreams.toByteArray(in));
+
+						in.close();
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+				}
 
 			}
 
-		}
-
-		if (!this.getConfig().exists()) {
-
-			this.saveDefaultConfig();
-
-		}
-
-		try {
-
 			//Why is this is this not in the javadocs?
 			//OR IS IT?!?!
-			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(this.getConfig());
+			Configuration yml = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile.toFile());
 
 			if (yml.getInt("config_version", 0) < 4) {
 
@@ -110,13 +120,13 @@ public class AlwaysOnline extends Plugin {
 				} catch (SQLException e) {
 					this.getLogger().severe("Failed to load the MySQL database, falling back to file database.");
 					e.printStackTrace();
-					this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+					this.db = new FileDatabase(dataFolder.resolve("playerData.txt"));
 				}
 
 			} else {
 
 				this.getLogger().info("Loading file database...");
-				this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+				this.db = new FileDatabase(dataFolder.resolve("playerData.txt"));
 
 			}
 
@@ -137,17 +147,13 @@ public class AlwaysOnline extends Plugin {
 
 			//Read the state.txt file and assign variables
 
-			File state_file = new File(this.getDataFolder(), "state.txt");
+			Path stateFile = dataFolder.resolve("state.txt");
 
-			if (state_file.exists()) {
+			if (Files.isReadable(stateFile)) {
 
-				Scanner scan = new Scanner(state_file);
+				String data = new String(Files.readAllBytes(stateFile), Utils.fileCharset);
 
-				String data = scan.nextLine();
-
-				scan.close();
-
-				if (data != null && data.contains(":")) {
+				if (data.contains(":")) {
 
 					String[] d = data.split(Pattern.quote(":"));
 
@@ -250,40 +256,6 @@ public class AlwaysOnline extends Plugin {
 
 			this.getLogger().info("Successfully saved the data!");
 
-		}
-
-	}
-
-	/**
-	 * Generates a file object for the config file
-	 *
-	 * @return The config file object
-	 */
-	private File getConfig() {
-
-		return new File(this.getDataFolder(), "config.yml");
-
-	}
-
-	/**
-	 * Saves the default plugin configuration file from the jar
-	 */
-	public void saveDefaultConfig() {
-
-		if (!this.getDataFolder().exists()) {
-			this.getDataFolder().mkdir();
-		}
-		File configFile = new File(this.getDataFolder(), "config.yml");
-		if (!configFile.exists()) {
-			try {
-				configFile.createNewFile();
-				try (InputStream is = this.getClass().getResourceAsStream("/config.yml");
-					 OutputStream os = new FileOutputStream(configFile)) {
-					ByteStreams.copy(is, os);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 
 	}

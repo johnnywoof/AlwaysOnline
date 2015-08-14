@@ -1,17 +1,18 @@
 package me.johnnywoof.bungee;
 
+import me.johnnywoof.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class AOCommand extends Command {
 
-	private final File state_path;
+	private final Path state_path;
 
 	private final AlwaysOnline ao;
 
@@ -20,7 +21,7 @@ public class AOCommand extends Command {
 
 		this.ao = ao;
 
-		this.state_path = new File(ao.getDataFolder(), "state.txt");
+		this.state_path = ao.getDataFolder().toPath().resolve("state.txt");
 
 	}
 
@@ -82,11 +83,7 @@ public class AOCommand extends Command {
 
 			try {
 
-				FileWriter w = new FileWriter(this.state_path);
-
-				w.write(ao.disabled + ":" + AlwaysOnline.mojangOnline);
-
-				w.close();
+				Files.write(this.state_path, (ao.disabled + ":" + AlwaysOnline.mojangOnline).getBytes(Utils.fileCharset));
 
 			} catch (IOException e) {
 

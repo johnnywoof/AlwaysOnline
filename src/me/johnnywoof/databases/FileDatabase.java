@@ -1,6 +1,12 @@
 package me.johnnywoof.databases;
 
-import java.io.*;
+import me.johnnywoof.utils.Utils;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
@@ -11,9 +17,9 @@ public class FileDatabase implements Database {
 
 	private final ConcurrentHashMap<String, PlayerData> cache = new ConcurrentHashMap<>();
 
-	private final File savedData;
+	private final Path savedData;
 
-	public FileDatabase(File savedData) {
+	public FileDatabase(Path savedData) {
 
 		this.savedData = savedData;
 
@@ -101,9 +107,9 @@ public class FileDatabase implements Database {
 
 		ArrayList<String> existingLines = new ArrayList<>();
 
-		if (this.savedData.exists()) {
+		if (Files.isReadable(this.savedData)) {
 
-			BufferedReader br = new BufferedReader(new FileReader(this.savedData));
+			BufferedReader br = Files.newBufferedReader(this.savedData, Utils.fileCharset);
 
 			String l;
 
@@ -137,7 +143,7 @@ public class FileDatabase implements Database {
 
 		}
 
-		PrintWriter w = new PrintWriter(this.savedData);
+		PrintWriter w = new PrintWriter(Files.newBufferedWriter(this.savedData, Utils.fileCharset));
 
 		for (String line : existingLines) {
 
@@ -162,11 +168,7 @@ public class FileDatabase implements Database {
 
 	private PlayerData loadPlayerData(String username) throws IOException {
 
-		if (!this.savedData.exists()) {
-			return null;
-		}
-
-		BufferedReader br = new BufferedReader(new FileReader(this.savedData));
+		BufferedReader br = Files.newBufferedReader(this.savedData, Utils.fileCharset);
 
 		String l;
 

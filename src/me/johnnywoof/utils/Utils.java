@@ -3,8 +3,11 @@ package me.johnnywoof.utils;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 public class Utils {
+
+	public static final Charset fileCharset = Charset.forName("ISO-8859-1");
 
 	/**
 	 * Determines if the session server is online

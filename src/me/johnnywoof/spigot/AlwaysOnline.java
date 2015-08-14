@@ -13,14 +13,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class AlwaysOnline extends JavaPlugin {
@@ -31,7 +29,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 	public Database db = null;
 
-	private File stateFile;
+	private Path stateFile;
 
 	public void onEnable() {
 
@@ -65,6 +63,8 @@ public class AlwaysOnline extends JavaPlugin {
 
 		this.getLogger().info("Loading the database...");
 
+		Path dataFolder = this.getDataFolder().toPath();
+
 		if (this.getConfig().getBoolean("use_mysql", false) || this.getConfig().getInt("database-type", 0) == 2) {
 
 			this.getLogger().info("Loading MySQL database...");
@@ -78,13 +78,13 @@ public class AlwaysOnline extends JavaPlugin {
 			} catch (SQLException e) {
 				this.getLogger().severe("Failed to load the MySQL database, falling back to file database.");
 				e.printStackTrace();
-				this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+				this.db = new FileDatabase(dataFolder.resolve("playerData.txt"));
 			}
 
 		} else {
 
 			this.getLogger().info("Loading file database...");
-			this.db = new FileDatabase(new File(this.getDataFolder(), "playerData.txt"));
+			this.db = new FileDatabase(dataFolder.resolve("playerData.txt"));
 
 		}
 
@@ -92,19 +92,15 @@ public class AlwaysOnline extends JavaPlugin {
 
 		//Read the state.txt file and assign variables
 
-		this.stateFile = new File(this.getDataFolder(), "state.txt");
+		this.stateFile = dataFolder.resolve("state.txt");
 
-		if (this.stateFile.exists()) {
+		if (Files.isReadable(this.stateFile)) {
 
 			try {
 
-				Scanner scan = new Scanner(this.stateFile);
+				String data = new String(Files.readAllBytes(stateFile), Utils.fileCharset);
 
-				String data = scan.nextLine();
-
-				scan.close();
-
-				if (data != null && data.contains(":")) {
+				if (data.contains(":")) {
 
 					String[] d = data.split(Pattern.quote(":"));
 
@@ -115,7 +111,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 				}
 
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 
 				e.printStackTrace();
 				this.getLogger().info("The error is not critical and can be safely ignored.");
@@ -329,11 +325,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 			try {
 
-				FileWriter w = new FileWriter(this.stateFile);
-
-				w.write(this.disabled + ":" + mojangOnline);
-
-				w.close();
+				Files.write(this.stateFile, (this.disabled + ":" + mojangOnline).getBytes(Utils.fileCharset));
 
 			} catch (IOException e) {
 
