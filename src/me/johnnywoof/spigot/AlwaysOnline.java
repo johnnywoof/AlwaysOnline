@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public class AlwaysOnline extends JavaPlugin implements NativeExecutor {
@@ -176,7 +177,7 @@ public class AlwaysOnline extends JavaPlugin implements NativeExecutor {
 
 		this.getLogger().info("Starting the session check task...");
 
-		int ct = this.getConfig().getInt("check-interval", 30);
+		int ct = Math.max(0, this.getConfig().getInt("check-interval", 30));
 
 		if (ct < 15) {
 
@@ -353,8 +354,9 @@ public class AlwaysOnline extends JavaPlugin implements NativeExecutor {
 	}
 
 	@Override
-	public int runAsyncRepeating(Runnable runnable, long millisecondPeriod) {
-		return this.getServer().getScheduler().runTaskTimerAsynchronously(this, runnable, 0, millisecondPeriod).getTaskId();
+	public int runAsyncRepeating(Runnable runnable, long delay, long period, TimeUnit timeUnit) {
+		return this.getServer().getScheduler().runTaskTimerAsynchronously(this, runnable,
+				(timeUnit.toSeconds(delay) * 20), (timeUnit.toSeconds(period) * 20)).getTaskId();
 	}
 
 	@Override

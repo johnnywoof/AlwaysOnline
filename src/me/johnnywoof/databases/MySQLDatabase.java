@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class MySQLDatabase implements Database {
 
@@ -65,14 +66,6 @@ public class MySQLDatabase implements Database {
 
 		this.close();//Close existing database connections, if one exists.
 
-		//Manual keep-alive task. Should work with all drivers.
-		this.pingTaskID = this.nativeExecutor.runAsyncRepeating(new Runnable() {
-			@Override
-			public void run() {
-				MySQLDatabase.this.pingDatabase();
-			}
-		}, 60000);
-
 		this.statement = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/"
 				+ this.database, this.username, this.password).createStatement();
 
@@ -81,6 +74,14 @@ public class MySQLDatabase implements Database {
 			this.statement.executeUpdate("CREATE TABLE `always_online` ( `name` CHAR(16) NOT NULL , `ip` CHAR(15) NOT NULL , `uuid` CHAR(36) NOT NULL , PRIMARY KEY (`name`)) ENGINE = MyISAM; ");
 
 		}
+
+		//Manual keep-alive task. Should work with all drivers.
+		this.pingTaskID = this.nativeExecutor.runAsyncRepeating(new Runnable() {
+			@Override
+			public void run() {
+				MySQLDatabase.this.pingDatabase();
+			}
+		}, 0, 1, TimeUnit.MINUTES);//1 minute
 
 	}
 

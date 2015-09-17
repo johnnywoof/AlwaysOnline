@@ -1,7 +1,8 @@
 name: AlwaysOnline
-version: 5.4
+version: 5.5
 main: me.johnnywoof.spigot.AlwaysOnline
 author: Johnnywoof
+website: http://www.spigotmc.org/resources/alwaysonline.820/
 commands:
     alwaysonline:
         description: Base command for always online.

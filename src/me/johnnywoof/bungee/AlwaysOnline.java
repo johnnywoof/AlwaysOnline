@@ -102,13 +102,17 @@ public class AlwaysOnline extends Plugin implements NativeExecutor {
 
 			}
 
-			int ct = yml.getInt("check-interval", 30);
+			int ct = Math.max(0, yml.getInt("check-interval", 30));//No negative numbers.
 
 			if (ct < 15) {
 
 				this.getLogger().warning("Your check-interval is less than 15 seconds. This can cause a lot of false positives, so please set it to a higher number!");
 
 			}
+
+			//Kill existing runnables and listeners (in case of reload)
+
+			this.getProxy().getScheduler().cancel(this);
 
 			if (yml.getBoolean("use_mysql", false) || yml.getInt("database-type", 0) == 2) {
 
@@ -132,17 +136,6 @@ public class AlwaysOnline extends Plugin implements NativeExecutor {
 			}
 
 			this.getLogger().info("Database is ready to go!");
-
-			if (ct == -1) {
-
-				this.getLogger().severe("Negative number!");
-				return;
-
-			}
-
-			//Kill existing runnables and listeners (in case of reload)
-
-			this.getProxy().getScheduler().cancel(this);
 
 			this.getProxy().getPluginManager().unregisterListeners(this);
 
@@ -268,8 +261,8 @@ public class AlwaysOnline extends Plugin implements NativeExecutor {
 	}
 
 	@Override
-	public int runAsyncRepeating(Runnable runnable, long millisecondPeriod) {
-		return this.getProxy().getScheduler().schedule(this, runnable, 0, millisecondPeriod, TimeUnit.MILLISECONDS).getId();
+	public int runAsyncRepeating(Runnable runnable, long delay, long period, TimeUnit timeUnit) {
+		return this.getProxy().getScheduler().schedule(this, runnable, delay, period, timeUnit).getId();
 	}
 
 	@Override
