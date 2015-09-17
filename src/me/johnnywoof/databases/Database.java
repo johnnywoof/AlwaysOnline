@@ -25,8 +25,8 @@ public interface Database {
 	void save() throws Exception;
 
 	/**
-	 * Resets the cache
+	 * Closes the database connections/streams
 	 */
-	void resetCache();
+	void close();
 
 }

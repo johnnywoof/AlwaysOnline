@@ -1,6 +1,7 @@
 package me.johnnywoof.spigot;
 
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import me.johnnywoof.NativeExecutor;
 import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
@@ -21,7 +22,7 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-public class AlwaysOnline extends JavaPlugin {
+public class AlwaysOnline extends JavaPlugin implements NativeExecutor {
 
 	public static boolean mojangOnline = true;
 
@@ -71,7 +72,7 @@ public class AlwaysOnline extends JavaPlugin {
 
 			try {
 
-				this.db = new MySQLDatabase(this.getConfig().getString("host"), this.getConfig().getInt("port"),
+				this.db = new MySQLDatabase(this, this.getConfig().getString("host"), this.getConfig().getInt("port"),
 						this.getConfig().getString("database-name"),
 						this.getConfig().getString("database-username"), this.getConfig().getString("database-password"));
 
@@ -130,10 +131,6 @@ public class AlwaysOnline extends JavaPlugin {
 
 		try {
 
-			//I somehow have a feeling that this code is probably going to
-			// be "stolen" and would be implemented into other plugins. Oh well. Least I was the first (I think)
-			// to implement a custom authentication system in spigot :)
-
 			String nmsVersion = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 
 			String sessionServiceVariableName;
@@ -147,7 +144,7 @@ public class AlwaysOnline extends JavaPlugin {
 					break;
 				default:
 					this.getLogger().severe("AlwaysOnline currently does not support spigot version " + this.getServer().getVersion());
-					this.getLogger().severe("This build of AlwaysOnline only supports minecraft versions 1.8.7 or higher.");
+					this.getLogger().severe("This build of AlwaysOnline only supports minecraft versions 1.8.7 and 1.8.8");
 					this.getPluginLoader().disablePlugin(this);
 					return;
 
@@ -258,12 +255,16 @@ public class AlwaysOnline extends JavaPlugin {
 			this.getLogger().info("Saving data...");
 
 			try {
+
 				this.db.save();
+
+				this.getLogger().info("Closing database connections/streams...");
+
+				this.db.close();
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			this.getLogger().info("Successfully saved the data!");
 
 		}
 
@@ -351,4 +352,13 @@ public class AlwaysOnline extends JavaPlugin {
 
 	}
 
+	@Override
+	public int runAsyncRepeating(Runnable runnable, long millisecondPeriod) {
+		return this.getServer().getScheduler().runTaskTimerAsynchronously(this, runnable, 0, millisecondPeriod).getTaskId();
+	}
+
+	@Override
+	public void cancelTask(int taskID) {
+		this.getServer().getScheduler().cancelTask(taskID);
+	}
 }

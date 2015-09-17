@@ -1,6 +1,7 @@
 package me.johnnywoof.bungee;
 
 import com.google.common.io.ByteStreams;
+import me.johnnywoof.NativeExecutor;
 import me.johnnywoof.databases.Database;
 import me.johnnywoof.databases.FileDatabase;
 import me.johnnywoof.databases.MySQLDatabase;
@@ -22,7 +23,7 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public class AlwaysOnline extends Plugin {
+public class AlwaysOnline extends Plugin implements NativeExecutor {
 
 	public static boolean mojangOnline = true;
 
@@ -115,7 +116,7 @@ public class AlwaysOnline extends Plugin {
 
 				try {
 
-					this.db = new MySQLDatabase(yml.getString("host"), yml.getInt("port"), yml.getString("database-name"), yml.getString("database-username"), yml.getString("database-password"));
+					this.db = new MySQLDatabase(this, yml.getString("host"), yml.getInt("port"), yml.getString("database-name"), yml.getString("database-username"), yml.getString("database-password"));
 
 				} catch (SQLException e) {
 					this.getLogger().severe("Failed to load the MySQL database, falling back to file database.");
@@ -249,15 +250,30 @@ public class AlwaysOnline extends Plugin {
 			this.getLogger().info("Saving data...");
 
 			try {
-				this.db.save();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 
-			this.getLogger().info("Successfully saved the data!");
+				this.db.save();
+
+				this.getLogger().info("Closing database connections/streams...");
+
+				this.db.close();
+
+			} catch (Exception e) {
+
+				e.printStackTrace();
+
+			}
 
 		}
 
 	}
 
+	@Override
+	public int runAsyncRepeating(Runnable runnable, long millisecondPeriod) {
+		return this.getProxy().getScheduler().schedule(this, runnable, 0, millisecondPeriod, TimeUnit.MILLISECONDS).getId();
+	}
+
+	@Override
+	public void cancelTask(int taskID) {
+		this.getProxy().getScheduler().cancel(taskID);
+	}
 }

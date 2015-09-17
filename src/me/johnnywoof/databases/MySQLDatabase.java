@@ -1,7 +1,6 @@
 package me.johnnywoof.databases;
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
+import me.johnnywoof.NativeExecutor;
 
 import java.sql.*;
 import java.util.Map;
@@ -19,11 +18,14 @@ public class MySQLDatabase implements Database {
 	private final String username;
 	private final String password;
 
-	private Statement statement = null;
-
 	private final ConcurrentHashMap<String, PlayerData> cache = new ConcurrentHashMap<>();
 
-	public MySQLDatabase(String host, int port, String database, String username, String password) throws SQLException {
+	private Statement statement = null;
+
+	private final NativeExecutor nativeExecutor;
+	private int pingTaskID = -1;
+
+	public MySQLDatabase(NativeExecutor nativeExecutor, String host, int port, String database, String username, String password) throws SQLException {
 
 		this.host = host;
 		this.port = port;
@@ -31,25 +33,45 @@ public class MySQLDatabase implements Database {
 		this.username = username;
 		this.password = password;
 
+		this.nativeExecutor = nativeExecutor;
+
 		this.connect();
 
 	}
 
-	private void connect() throws SQLException {
+	public void pingDatabase() {
 
-		if (this.statement != null) {
+		if (this.statement != null) {//Is alive check
 
 			try {
 
-				this.statement.close();
+				//Ping the database.
+				if (!this.statement.getConnection().isValid(30)) {//30 second timeout
+
+					//Auto-reconnect
+					this.connect();
+
+				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 
-			this.statement = null;
-
 		}
+
+	}
+
+	private void connect() throws SQLException {
+
+		this.close();//Close existing database connections, if one exists.
+
+		//Manual keep-alive task. Should work with all drivers.
+		this.pingTaskID = this.nativeExecutor.runAsyncRepeating(new Runnable() {
+			@Override
+			public void run() {
+				MySQLDatabase.this.pingDatabase();
+			}
+		}, 60000);
 
 		this.statement = DriverManager.getConnection("jdbc:mysql://" + this.host + ":" + this.port + "/"
 				+ this.database, this.username, this.password).createStatement();
@@ -106,17 +128,6 @@ public class MySQLDatabase implements Database {
 
 				rs.close();
 				preparedStatement.close();
-
-			} catch (CommunicationsException | MySQLNonTransientConnectionException e) {
-
-				try {
-
-					this.connect();
-					return this.loadDataFromSQL(username);
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
 
 			} catch (SQLException e) {
 
@@ -232,8 +243,32 @@ public class MySQLDatabase implements Database {
 	}
 
 	@Override
-	public void resetCache() {
-		this.cache.clear();
+	public void close() {
+
+		if (this.pingTaskID != -1) {
+
+			this.nativeExecutor.cancelTask(this.pingTaskID);
+
+			this.pingTaskID = -1;
+
+		}
+
+		if (this.statement != null) {
+
+			try {
+
+				this.statement.close();
+
+			} catch (SQLException e) {
+				/*Non-critical error*/
+			}
+
+			this.statement = null;
+
+			this.cache.clear();
+
+		}
+
 	}
 
 	/**

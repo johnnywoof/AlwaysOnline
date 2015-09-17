@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -105,21 +103,11 @@ public class FileDatabase implements Database {
 
 	public void save() throws Exception {
 
-		ArrayList<String> existingLines = new ArrayList<>();
+		List<String> existingLines;
 
-		if (Files.isReadable(this.savedData)) {
+		if (Files.isReadable(this.savedData)) {//File exists check is included
 
-			BufferedReader br = Files.newBufferedReader(this.savedData, Utils.fileCharset);
-
-			String l;
-
-			while ((l = br.readLine()) != null) {
-
-				existingLines.add(l);
-
-			}
-
-			br.close();
+			existingLines = Files.readAllLines(this.savedData, Utils.fileCharset);
 
 			ArrayList<String> toRemove = new ArrayList<>();
 
@@ -140,6 +128,10 @@ public class FileDatabase implements Database {
 			existingLines.removeAll(toRemove);
 
 			toRemove.clear();
+
+		} else {
+
+			existingLines = Collections.emptyList();
 
 		}
 
@@ -162,7 +154,8 @@ public class FileDatabase implements Database {
 	}
 
 	@Override
-	public void resetCache() {
+	public void close() {
+		/*Nothing to see here*/
 		this.cache.clear();
 	}
 
