@@ -1,7 +1,7 @@
 name: AlwaysOnline
-version: 5.5.1
+version: 5.6.1
 main: me.johnnywoof.spigot.AlwaysOnline
-author: Johnnywoof
+author: Johnnywoof edited by themazim
 website: http://www.spigotmc.org/resources/alwaysonline.820/
 commands:
     alwaysonline:
