@@ -7,4 +7,4 @@ commands:
     alwaysonline:
         description: Base command for always online.
         usage: /alwaysonline
-        aliases: [bungeeLoader]
+        aliases: [ao]
