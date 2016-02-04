@@ -1,7 +1,7 @@
 package me.johnnywoof.bungee;
 
+import me.johnnywoof.hybrid.AlwaysOnline;
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
@@ -18,32 +18,21 @@ import java.util.regex.Pattern;
 
 public class AOListener implements Listener {
 
-	private final Pattern pat = Pattern.compile("^[a-zA-Z0-9_-]{2,16}$");//The regex to verify usernames;
+	private final Pattern pat = Pattern.compile("^[a-zA-Z0-9_-]{3,16}$");//The regex to verify usernames;
 
-	private final String kick_invalid_name;
-	private final String kick_not_same_ip;
-	private final String kick_new_player;
-	private final String motdOffline;
+	private String MOTD;
 
-	private final AlwaysOnline ao;
+	private final BungeeLoader bungeeLoader;
 
-	public AOListener(AlwaysOnline ao, String invalid, String kick_ip, String kick_new, String motdOffline) {
+	public AOListener(BungeeLoader bungeeLoader) {
 
-		this.ao = ao;
+		this.bungeeLoader = bungeeLoader;
 
-		if ("null".equals(motdOffline) || motdOffline == null) {
+		this.MOTD = this.bungeeLoader.alwaysOnline.config.getProperty("message-motd-offline",
+				"&eMojang servers are down,\\n&ebut you can still connect!");
 
-			this.motdOffline = null;
-
-		} else {
-
-			this.motdOffline = ChatColor.translateAlternateColorCodes('&', motdOffline);
-
-		}
-
-		this.kick_invalid_name = ChatColor.translateAlternateColorCodes('&', invalid);
-		this.kick_not_same_ip = ChatColor.translateAlternateColorCodes('&', kick_ip);
-		this.kick_new_player = ChatColor.translateAlternateColorCodes('&', kick_new);
+		if ("null".equals(this.MOTD))
+			this.MOTD = null;
 
 	}
 
@@ -52,25 +41,16 @@ public class AOListener implements Listener {
 	public void onPreLogin(PreLoginEvent event) {
 
 		//Make sure it is not canceled
-		if (event.isCancelled()) {
+		if (event.isCancelled())
 			return;
-		}
 
-		if (!AlwaysOnline.mojangOnline) {//Make sure we are in mojang offline mode
+		if (AlwaysOnline.MOJANG_OFFLINE_MODE) {//Make sure we are in mojang offline mode
 
 			//Verify if the name attempting to connect is even verified
 
-			if (event.getConnection().getName().length() > 16) {
+			if (!this.validate(event.getConnection().getName())) {
 
-				event.setCancelReason(this.kick_invalid_name);
-
-				event.setCancelled(true);
-
-				return;
-
-			} else if (!this.validate(event.getConnection().getName())) {
-
-				event.setCancelReason(this.kick_invalid_name);
+				event.setCancelReason(this.bungeeLoader.alwaysOnline.config.getProperty("message-kick-invalid", "Invalid username. Hacking?"));
 
 				event.setCancelled(true);
 
@@ -86,31 +66,32 @@ public class AOListener implements Listener {
 			final String ip = handler.getAddress().getAddress().getHostAddress();
 
 			//Get last known ip
-			final String lastip = this.ao.db.getIP(event.getConnection().getName());
+			final String lastip = this.bungeeLoader.alwaysOnline.database.getIP(event.getConnection().getName());
 
 			if (lastip == null) {//If null the player connecting is new
 
-				event.setCancelReason(this.kick_new_player);
+				event.setCancelReason(this.bungeeLoader.alwaysOnline.config.getProperty("message-kick-new", "We can not let you join because the mojang servers are offline!"));
 
 				event.setCancelled(true);
 
-				this.ao.getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] has never connected to this server before!");
+				this.bungeeLoader.getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] has never connected to this server before!");
 
 			} else {
 
 				if (ip.equals(lastip)) {//If it matches set handler to offline mode, so it does not authenticate player with mojang
 
-					this.ao.getLogger().info("Skipping session login for player " + event.getConnection().getName() + " [Connected ip: " + ip + ", Last ip: " + lastip + "]!");
+					this.bungeeLoader.getLogger().info("Skipping session login for player " + event.getConnection().getName() + " [Connected ip: " + ip + ", Last ip: " + lastip + "]!");
 
 					handler.setOnlineMode(false);
 
 				} else {//Deny the player from joining
 
-					this.ao.getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] does not match their last ip!");
+					this.bungeeLoader.getLogger().info("Denied " + event.getConnection().getName() + " from logging in cause their ip [" + ip + "] does not match their last ip!");
 
 					handler.setOnlineMode(true);
 
-					event.setCancelReason(this.kick_not_same_ip);
+					event.setCancelReason(this.bungeeLoader.alwaysOnline.config.getProperty("message-kick-ip",
+							"We can not let you join since you are not on the same computer you logged on before!"));
 
 					event.setCancelled(true);
 
@@ -126,15 +107,11 @@ public class AOListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPing(ProxyPingEvent event) {
 
-		if (!AlwaysOnline.mojangOnline && this.motdOffline != null) {
+		if (AlwaysOnline.MOJANG_OFFLINE_MODE && this.MOTD != null) {
 
 			ServerPing sp = event.getResponse();
 
-			String s = this.motdOffline;
-
-			s = s.replaceAll(".newline.", "\n");
-
-			sp.setDescription(s);
+			sp.setDescription(this.MOTD);
 
 			event.setResponse(sp);
 
@@ -147,13 +124,13 @@ public class AOListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPost(PostLoginEvent event) {
 
-		if (!AlwaysOnline.mojangOnline) {
+		if (AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 			InitialHandler handler = (InitialHandler) event.getPlayer().getPendingConnection();
 
 			try {
 
-				UUID uuid = this.ao.db.getUUID(event.getPlayer().getName());
+				UUID uuid = this.bungeeLoader.alwaysOnline.database.getUUID(event.getPlayer().getName());
 
 				//Reflection
 
@@ -165,8 +142,8 @@ public class AOListener implements Listener {
 				sf.setAccessible(true);
 				sf.set(handler, uuid);
 
-				Collection<String> g = this.ao.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getName());
-				g.addAll(this.ao.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getUniqueId().toString()));
+				Collection<String> g = this.bungeeLoader.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getName());
+				g.addAll(this.bungeeLoader.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getUniqueId().toString()));
 
 				UserConnection userConnection = (UserConnection) event.getPlayer();
 
@@ -174,7 +151,7 @@ public class AOListener implements Listener {
 					userConnection.addGroups(s);
 				}
 
-				this.ao.getLogger().info(event.getPlayer().getName() + " successfully logged in while mojang servers were offline!");
+				this.bungeeLoader.getLogger().info(event.getPlayer().getName() + " successfully logged in while mojang servers were offline!");
 
 				//ProxyServer.getInstance().getLogger().info("Overriding uuid for " + event.getPlayer().getName() + " to " + uuid.toString() + "! New uuid is " + event.getPlayer().getUniqueId().toString());
 
@@ -182,7 +159,7 @@ public class AOListener implements Listener {
 
 				event.getPlayer().disconnect("Sorry, the mojang servers are offline and we can't authenticate you with our own system!");
 
-				this.ao.getLogger().warning("Internal error for " + event.getPlayer().getName() + ", preventing login.");
+				this.bungeeLoader.getLogger().warning("Internal error for " + event.getPlayer().getName() + ", preventing login.");
 
 				e.printStackTrace();
 
@@ -196,10 +173,10 @@ public class AOListener implements Listener {
 			final String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
 			final UUID uuid = event.getPlayer().getUniqueId();
 
-			this.ao.getProxy().getScheduler().runAsync(this.ao, new Runnable() {
+			this.bungeeLoader.getProxy().getScheduler().runAsync(this.bungeeLoader, new Runnable() {
 				@Override
 				public void run() {
-					AOListener.this.ao.db.updatePlayer(username, ip, uuid);
+					AOListener.this.bungeeLoader.alwaysOnline.database.updatePlayer(username, ip, uuid);
 				}
 			});
 

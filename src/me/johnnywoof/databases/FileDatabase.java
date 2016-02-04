@@ -1,10 +1,9 @@
 package me.johnnywoof.databases;
 
-import me.johnnywoof.utils.Utils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -107,7 +106,7 @@ public class FileDatabase implements Database {
 
 		if (Files.isReadable(this.savedData)) {//File exists check is included
 
-			existingLines = Files.readAllLines(this.savedData, Utils.fileCharset);
+			existingLines = Files.readAllLines(this.savedData, StandardCharsets.UTF_8);
 
 			ArrayList<String> toRemove = new ArrayList<>();
 
@@ -135,7 +134,7 @@ public class FileDatabase implements Database {
 
 		}
 
-		PrintWriter w = new PrintWriter(Files.newBufferedWriter(this.savedData, Utils.fileCharset));
+		PrintWriter w = new PrintWriter(Files.newBufferedWriter(this.savedData, StandardCharsets.UTF_8));
 
 		for (String line : existingLines) {
 
@@ -161,7 +160,7 @@ public class FileDatabase implements Database {
 
 	private PlayerData loadPlayerData(String username) throws IOException {
 
-		BufferedReader br = Files.newBufferedReader(this.savedData, Utils.fileCharset);
+		BufferedReader br = Files.newBufferedReader(this.savedData, StandardCharsets.UTF_8);
 
 		String l;
 

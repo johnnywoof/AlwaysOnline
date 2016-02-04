@@ -5,7 +5,7 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import me.johnnywoof.databases.Database;
-import me.johnnywoof.spigot.AlwaysOnline;
+import me.johnnywoof.hybrid.AlwaysOnline;
 
 import java.util.UUID;
 
@@ -21,7 +21,7 @@ public class CustomAuthService extends YggdrasilMinecraftSessionService {
 	@Override
 	public GameProfile hasJoinedServer(GameProfile user, String serverId) throws AuthenticationUnavailableException {
 
-		if (!AlwaysOnline.mojangOnline) {
+		if (AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 			UUID uuid = this.database.getUUID(user.getName());
 

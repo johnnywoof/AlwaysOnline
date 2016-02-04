@@ -1,5 +1,5 @@
 name: AlwaysOnline
-version: 5.5.1
+version: 6.0
 main: me.johnnywoof.spigot.AlwaysOnline
 author: Johnnywoof
 website: http://www.spigotmc.org/resources/alwaysonline.820/
@@ -7,4 +7,4 @@ commands:
     alwaysonline:
         description: Base command for always online.
         usage: /alwaysonline
-        aliases: [ao]
+        aliases: [bungeeLoader]

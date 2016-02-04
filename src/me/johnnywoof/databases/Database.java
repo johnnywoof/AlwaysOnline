@@ -26,6 +26,7 @@ public interface Database {
 
 	/**
 	 * Closes the database connections/streams
+	 * This method does not save any data
 	 */
 	void close();
 

@@ -229,7 +229,7 @@ public class MySQLDatabase implements Database {
 					preparedStatement.addBatch();
 					i++;
 
-					if (i % 1000 == 0 || i == this.cache.size()) {
+					if (i == 1000 || i == this.cache.size()) {
 						preparedStatement.executeBatch(); // Execute every 1000 items or when full.
 						i = 0;
 					}

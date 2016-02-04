@@ -1,29 +1,41 @@
 package me.johnnywoof.spigot;
 
+import me.johnnywoof.hybrid.AlwaysOnline;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.ServerListPingEvent;
 
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class AOListener implements Listener {
 
-	private final Pattern pat = Pattern.compile("^[a-zA-Z0-9_-]{2,16}$");//The regex to verify usernames;
+	private final Pattern pat = Pattern.compile("^[a-zA-Z0-9_-]{3,16}$");//The regex to verify usernames;
 
-	private final AlwaysOnline alwaysOnline;
-	private final String kick_invalid_name;
-	private final String kick_not_same_ip;
-	private final String kick_new_player;
+	private final SpigotLoader spigotLoader;
+	private String MOTD;
 
-	public AOListener(AlwaysOnline alwaysOnline, String invalid, String kick_ip, String kick_new) {
+	public AOListener(SpigotLoader spigotLoader) {
 
-		this.alwaysOnline = alwaysOnline;
-		this.kick_invalid_name = invalid;
-		this.kick_not_same_ip = kick_ip;
-		this.kick_new_player = kick_new;
+		this.spigotLoader = spigotLoader;
+
+		this.MOTD = this.spigotLoader.alwaysOnline.config.getProperty("message-motd-offline",
+				"&eMojang servers are down,\\n&ebut you can still connect!");
+
+		if ("null".equals(this.MOTD))
+			this.MOTD = null;
+
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onMOTD(ServerListPingEvent event) {
+
+		if (AlwaysOnline.MOJANG_OFFLINE_MODE && this.MOTD != null)
+			event.setMotd(this.MOTD);
 
 	}
 
@@ -31,34 +43,38 @@ public class AOListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
 
-		if (!AlwaysOnline.mojangOnline) {
+		if (AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 			String username = event.getName();
 
 			if (!this.validate(username)) {
 
-				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_invalid_name);
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+						this.spigotLoader.alwaysOnline.config.getProperty("message-kick-invalid", "Invalid username. Hacking?"));
 				return;
 
 			}
 
 			String ip = event.getAddress().getHostAddress();
 
-			String lastIP = this.alwaysOnline.db.getIP(username);
+			String lastIP = this.spigotLoader.alwaysOnline.database.getIP(username);
 
 			if (lastIP == null) {
 
-				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_new_player);
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+						this.spigotLoader.alwaysOnline.config.getProperty("message-kick-new", "We can not let you join because the mojang servers are offline!"));
 
 			} else {
 
 				if (!lastIP.equals(ip)) {
 
-					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, this.kick_not_same_ip);
+					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+							this.spigotLoader.alwaysOnline.config.getProperty("message-kick-ip",
+									"We can not let you join since you are not on the same computer you logged on before!"));
 
 				} else {
 
-					this.alwaysOnline.getLogger().info(username + " was successfully authenticated while mojang servers were offline. Connecting IP is " + ip + " and the last authenticated known IP was " + lastIP);
+					this.spigotLoader.log(Level.INFO, username + " was successfully authenticated while mojang servers were offline. Connecting IP is " + ip + " and the last authenticated known IP was " + lastIP);
 
 				}
 
@@ -71,16 +87,16 @@ public class AOListener implements Listener {
 	@EventHandler
 	public void onPostLogin(PlayerJoinEvent event) {
 
-		if (AlwaysOnline.mojangOnline) {
+		if (!AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 			final String username = event.getPlayer().getName();
 			final String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
 			final UUID uuid = event.getPlayer().getUniqueId();
 
-			this.alwaysOnline.getServer().getScheduler().runTaskAsynchronously(this.alwaysOnline, new Runnable() {
+			this.spigotLoader.getServer().getScheduler().runTaskAsynchronously(this.spigotLoader, new Runnable() {
 				@Override
 				public void run() {
-					AOListener.this.alwaysOnline.db.updatePlayer(username, ip, uuid);
+					AOListener.this.spigotLoader.alwaysOnline.database.updatePlayer(username, ip, uuid);
 				}
 			});
 

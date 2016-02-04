@@ -1,28 +1,18 @@
 package me.johnnywoof.bungee;
 
-import me.johnnywoof.utils.Utils;
+import me.johnnywoof.hybrid.AlwaysOnline;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class AOCommand extends Command {
 
-	private final Path state_path;
+	private final BungeeLoader ao;
 
-	private final AlwaysOnline ao;
-
-	public AOCommand(AlwaysOnline ao) {
+	public AOCommand(BungeeLoader ao) {
 		super("alwaysonline", "alwaysonline.usage", "ao");
-
 		this.ao = ao;
-
-		this.state_path = ao.getDataFolder().toPath().resolve("state.txt");
-
 	}
 
 	public void execute(CommandSender sender, String[] args) {
@@ -36,13 +26,11 @@ public class AOCommand extends Command {
 			switch (args[0].toLowerCase()) {
 				case "toggle":
 
-					AlwaysOnline.mojangOnline = !AlwaysOnline.mojangOnline;
+					AlwaysOnline.MOJANG_OFFLINE_MODE = !AlwaysOnline.MOJANG_OFFLINE_MODE;
 
-					ao.disabled = !AlwaysOnline.mojangOnline;
+					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Mojang offline mode is now " + ((AlwaysOnline.MOJANG_OFFLINE_MODE ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled")) + ChatColor.GOLD + "!"));
 
-					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Mojang offline mode is now " + ((!AlwaysOnline.mojangOnline ? ChatColor.GREEN + "enabled" : ChatColor.RED + "disabled")) + ChatColor.GOLD + "!"));
-
-					if (AlwaysOnline.mojangOnline) {
+					if (!AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 						sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "AlwaysOnline will now treat the mojang servers as being online."));
 
@@ -55,23 +43,23 @@ public class AOCommand extends Command {
 					break;
 				case "disable":
 
-					ao.disabled = true;
+					AlwaysOnline.CHECK_SESSION_STATUS = false;
 
 					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "AlwaysOnline has been disabled! AlwaysOnline will no longer check to see if the session server is offline."));
 
 					break;
 				case "enable":
 
-					ao.disabled = false;
+					AlwaysOnline.CHECK_SESSION_STATUS = true;
 
 					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "AlwaysOnline has been enabled! AlwaysOnline will now check to see if the session server is offline."));
 
 					break;
 				case "reload":
 
-					ao.reload();
+					this.ao.alwaysOnline.reload();
 
-					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "Configuration file has been reloaded!"));
+					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "AlwaysOnline has been reloaded!"));
 
 					break;
 				default:
@@ -81,15 +69,7 @@ public class AOCommand extends Command {
 					break;
 			}
 
-			try {
-
-				Files.write(this.state_path, (ao.disabled + ":" + AlwaysOnline.mojangOnline).getBytes(Utils.fileCharset));
-
-			} catch (IOException e) {
-
-				ao.getLogger().warning("Failed to save state. This error is not severe. [" + e.getMessage() + "]");
-
-			}
+			this.ao.alwaysOnline.saveState();
 
 		}
 
