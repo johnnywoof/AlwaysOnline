@@ -1,4 +1,4 @@
-package me.johnnywoof.databases;
+package me.johnnywoof.ao.databases;
 
 import java.util.UUID;
 
@@ -20,6 +20,11 @@ public class PlayerData {
 	@Override
 	public boolean equals(Object o) {
 		return o == this || (o instanceof PlayerData && ((PlayerData) o).uuid.equals(this.uuid));
+	}
+
+	@Override
+	public int hashCode() {
+		return this.uuid.hashCode();
 	}
 
 }

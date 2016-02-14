@@ -1,6 +1,6 @@
-package me.johnnywoof.bungee;
+package me.johnnywoof.ao.bungee;
 
-import me.johnnywoof.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;

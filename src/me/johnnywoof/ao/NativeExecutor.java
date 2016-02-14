@@ -1,6 +1,6 @@
-package me.johnnywoof;
+package me.johnnywoof.ao;
 
-import me.johnnywoof.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
 
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;

@@ -1,7 +1,7 @@
-package me.johnnywoof.bungee;
+package me.johnnywoof.ao.bungee;
 
-import me.johnnywoof.NativeExecutor;
-import me.johnnywoof.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.NativeExecutor;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 

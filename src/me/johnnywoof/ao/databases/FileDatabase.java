@@ -1,4 +1,4 @@
-package me.johnnywoof.databases;
+package me.johnnywoof.ao.databases;
 
 import java.io.BufferedReader;
 import java.io.IOException;

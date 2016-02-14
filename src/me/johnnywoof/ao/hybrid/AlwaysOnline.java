@@ -1,10 +1,10 @@
-package me.johnnywoof.hybrid;
+package me.johnnywoof.ao.hybrid;
 
 import com.google.common.io.ByteStreams;
-import me.johnnywoof.NativeExecutor;
-import me.johnnywoof.databases.Database;
-import me.johnnywoof.databases.FileDatabase;
-import me.johnnywoof.databases.MySQLDatabase;
+import me.johnnywoof.ao.NativeExecutor;
+import me.johnnywoof.ao.databases.Database;
+import me.johnnywoof.ao.databases.FileDatabase;
+import me.johnnywoof.ao.databases.MySQLDatabase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,25 +73,23 @@ public class AlwaysOnline {
 
 			Files.createDirectory(dataFolder);
 
-			//Save default configuration or convert old one
+			//Save default configuration
 			if (Files.notExists(configFile)) {
 
-				//New config file doesn't exist but the old one does. Start the conversion process.
+				//New config file doesn't exist but the old one does.
 				if (Files.exists(oldConfigFile)) {
 
-					this.nativeExecutor.log(Level.INFO, "Converting configuration file...");
-					//TODO Conversion
-
-				} else {
-
-					//First time the plugin is running. Copy the configuration file to the data folder.
-					InputStream in = this.getClass().getResourceAsStream("/config.properties");
-
-					Files.write(configFile, ByteStreams.toByteArray(in));
-
-					in.close();
+					this.nativeExecutor.log(Level.WARNING, "Detected an old configuration file. Please update the new file config.properties");
+					Files.move(oldConfigFile, dataFolder.resolve("obsolete_config.yml"));
 
 				}
+
+				//First time the plugin is running. Copy the configuration file to the data folder.
+				InputStream in = this.getClass().getResourceAsStream("/config.properties");
+
+				Files.write(configFile, ByteStreams.toByteArray(in));
+
+				in.close();
 
 			}
 

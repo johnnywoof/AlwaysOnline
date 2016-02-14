@@ -1,6 +1,6 @@
-package me.johnnywoof.bungee;
+package me.johnnywoof.ao.bungee;
 
-import me.johnnywoof.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PostLoginEvent;

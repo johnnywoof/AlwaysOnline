@@ -1,4 +1,4 @@
-package me.johnnywoof.databases;
+package me.johnnywoof.ao.databases;
 
 import java.util.UUID;
 

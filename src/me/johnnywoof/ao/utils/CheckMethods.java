@@ -1,4 +1,4 @@
-package me.johnnywoof.utils;
+package me.johnnywoof.ao.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

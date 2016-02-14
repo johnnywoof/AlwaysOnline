@@ -1,6 +1,6 @@
-package me.johnnywoof.spigot;
+package me.johnnywoof.ao.spigot;
 
-import me.johnnywoof.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

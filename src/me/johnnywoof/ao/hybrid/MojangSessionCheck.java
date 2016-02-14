@@ -1,7 +1,7 @@
-package me.johnnywoof.hybrid;
+package me.johnnywoof.ao.hybrid;
 
 import com.google.gson.Gson;
-import me.johnnywoof.utils.CheckMethods;
+import me.johnnywoof.ao.utils.CheckMethods;
 
 public class MojangSessionCheck implements Runnable {
 
@@ -9,7 +9,7 @@ public class MojangSessionCheck implements Runnable {
 	private final boolean useHeadSessionServer, mojangServerStatus, xpaw;
 	private final int totalCheckMethods;
 	private final String messageMojangOffline, messageMojangOnline;
-	private final Gson gson = new Gson();
+	private final Gson gson;
 
 	public MojangSessionCheck(AlwaysOnline alwaysOnline) {
 		this.alwaysOnline = alwaysOnline;
@@ -18,8 +18,12 @@ public class MojangSessionCheck implements Runnable {
 
 		this.useHeadSessionServer = Boolean.getBoolean(this.alwaysOnline.config.getProperty("http-head-session-server", "false"));
 
-		if (this.useHeadSessionServer)
+		if (this.useHeadSessionServer) {
 			methodCount++;
+			this.gson = new Gson();
+		} else {
+			this.gson = null;
+		}
 
 		this.mojangServerStatus = Boolean.getBoolean(this.alwaysOnline.config.getProperty("mojang-server-status", "false"));
 
@@ -60,7 +64,9 @@ public class MojangSessionCheck implements Runnable {
 			if (!AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 				AlwaysOnline.MOJANG_OFFLINE_MODE = true;
-				this.alwaysOnline.nativeExecutor.broadcastMessage(this.messageMojangOffline);
+
+				if (!"null".equals(this.messageMojangOffline))
+					this.alwaysOnline.nativeExecutor.broadcastMessage(this.messageMojangOffline);
 
 			}
 
@@ -69,7 +75,9 @@ public class MojangSessionCheck implements Runnable {
 			if (AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 				AlwaysOnline.MOJANG_OFFLINE_MODE = false;
-				this.alwaysOnline.nativeExecutor.broadcastMessage(this.messageMojangOnline);
+
+				if (!"null".equals(this.messageMojangOnline))
+					this.alwaysOnline.nativeExecutor.broadcastMessage(this.messageMojangOnline);
 
 			}
 

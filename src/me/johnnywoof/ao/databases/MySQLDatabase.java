@@ -1,6 +1,6 @@
-package me.johnnywoof.databases;
+package me.johnnywoof.ao.databases;
 
-import me.johnnywoof.NativeExecutor;
+import me.johnnywoof.ao.NativeExecutor;
 
 import java.sql.*;
 import java.util.Map;

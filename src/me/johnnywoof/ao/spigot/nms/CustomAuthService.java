@@ -1,11 +1,11 @@
-package me.johnnywoof.spigot.nms;
+package me.johnnywoof.ao.spigot.nms;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
-import me.johnnywoof.databases.Database;
-import me.johnnywoof.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.databases.Database;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
 
 import java.util.UUID;
 

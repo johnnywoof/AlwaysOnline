@@ -1,9 +1,9 @@
-package me.johnnywoof.spigot;
+package me.johnnywoof.ao.spigot;
 
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import me.johnnywoof.NativeExecutor;
-import me.johnnywoof.hybrid.AlwaysOnline;
-import me.johnnywoof.spigot.nms.CustomAuthService;
+import me.johnnywoof.ao.NativeExecutor;
+import me.johnnywoof.ao.hybrid.AlwaysOnline;
+import me.johnnywoof.ao.spigot.nms.CustomAuthService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
