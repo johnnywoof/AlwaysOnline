@@ -2,6 +2,7 @@ package me.johnnywoof.bungee;
 
 import me.johnnywoof.NativeExecutor;
 import me.johnnywoof.hybrid.AlwaysOnline;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.nio.file.Path;
@@ -61,6 +62,11 @@ public class BungeeLoader extends Plugin implements NativeExecutor {
 	@Override
 	public void registerListener() {
 		this.getProxy().getPluginManager().registerListener(this, new AOListener(this));
+	}
+
+	@Override
+	public void broadcastMessage(String message) {
+		this.getProxy().broadcast(TextComponent.fromLegacyText(message));
 	}
 
 	@Override

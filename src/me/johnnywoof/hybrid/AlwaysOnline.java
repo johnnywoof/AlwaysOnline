@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -24,7 +25,7 @@ public class AlwaysOnline {
 	public Database database = null;
 	public Properties config;
 
-	private final NativeExecutor nativeExecutor;
+	public final NativeExecutor nativeExecutor;
 	private Path stateFile;
 
 	public AlwaysOnline(NativeExecutor nativeExecutor) {
@@ -180,6 +181,8 @@ public class AlwaysOnline {
 		this.nativeExecutor.log(Level.INFO, "Database is ready to go!");
 
 		this.nativeExecutor.registerListener();
+
+		this.nativeExecutor.runAsyncRepeating(new MojangSessionCheck(this), 0, checkInterval, TimeUnit.SECONDS);
 
 
 	}

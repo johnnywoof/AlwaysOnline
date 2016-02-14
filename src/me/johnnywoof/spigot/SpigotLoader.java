@@ -197,6 +197,11 @@ public class SpigotLoader extends JavaPlugin implements NativeExecutor {
 	}
 
 	@Override
+	public void broadcastMessage(String message) {
+		this.getServer().broadcastMessage(message);
+	}
+
+	@Override
 	public AlwaysOnline getAOInstance() {
 		return this.alwaysOnline;
 	}

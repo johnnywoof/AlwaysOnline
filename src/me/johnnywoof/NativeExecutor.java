@@ -24,6 +24,8 @@ public interface NativeExecutor {
 
 	void registerListener();
 
+	void broadcastMessage(String message);
+
 	AlwaysOnline getAOInstance();
 
 }
