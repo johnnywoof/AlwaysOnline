@@ -1,6 +1,7 @@
 package me.johnnywoof.ao.spigot;
 
 import me.johnnywoof.ao.hybrid.AlwaysOnline;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,8 +24,8 @@ public class AOListener implements Listener {
 
 		this.spigotLoader = spigotLoader;
 
-		this.MOTD = this.spigotLoader.alwaysOnline.config.getProperty("message-motd-offline",
-				"&eMojang servers are down,\\n&ebut you can still connect!");
+		this.MOTD = ChatColor.translateAlternateColorCodes('&', this.spigotLoader.alwaysOnline.config.getProperty("message-motd-offline",
+				"&eMojang servers are down,\\n&ebut you can still connect!"));
 
 		if ("null".equals(this.MOTD))
 			this.MOTD = null;

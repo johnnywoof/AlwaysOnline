@@ -1,9 +1,8 @@
 name: AlwaysOnline
 version: 6.0
-main: me.johnnywoof.spigot.AlwaysOnline
+main: me.johnnywoof.ao.spigot.SpigotLoader
 author: Johnnywoof
 website: http://www.spigotmc.org/resources/alwaysonline.820/
-softdepend: [ProtocolLib]
 commands:
     alwaysonline:
         description: Base command for always online.

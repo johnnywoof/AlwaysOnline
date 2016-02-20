@@ -3,6 +3,8 @@ package me.johnnywoof.ao.hybrid;
 import com.google.gson.Gson;
 import me.johnnywoof.ao.utils.CheckMethods;
 
+import java.util.logging.Level;
+
 public class MojangSessionCheck implements Runnable {
 
 	private final AlwaysOnline alwaysOnline;
@@ -16,7 +18,31 @@ public class MojangSessionCheck implements Runnable {
 
 		int methodCount = 0;
 
-		this.useHeadSessionServer = Boolean.getBoolean(this.alwaysOnline.config.getProperty("http-head-session-server", "false"));
+		this.mojangServerStatus = Boolean.parseBoolean(this.alwaysOnline.config.getProperty("mojang-server-status", "false"));
+
+		this.alwaysOnline.nativeExecutor.log(Level.INFO, "Mojang help page check: " + this.mojangServerStatus);
+
+		if (this.mojangServerStatus)
+			methodCount++;
+
+		this.xpaw = Boolean.parseBoolean(this.alwaysOnline.config.getProperty("xpaw-status", "false"));
+
+		this.alwaysOnline.nativeExecutor.log(Level.INFO, "Xpaw check: " + this.xpaw);
+
+		if (this.xpaw)
+			methodCount++;
+
+		boolean headCheck = Boolean.parseBoolean(this.alwaysOnline.config.getProperty("http-head-session-server", "false"));
+
+		if (methodCount == 0 && !headCheck) {
+			this.alwaysOnline.nativeExecutor.log(Level.WARNING, "No check methods have been enabled in the configuration. " +
+					"Going to enable the head session server check.");
+			headCheck = true;
+		}
+
+		this.useHeadSessionServer = headCheck;
+
+		this.alwaysOnline.nativeExecutor.log(Level.INFO, "Head Session server check: " + this.useHeadSessionServer);
 
 		if (this.useHeadSessionServer) {
 			methodCount++;
@@ -25,20 +51,12 @@ public class MojangSessionCheck implements Runnable {
 			this.gson = null;
 		}
 
-		this.mojangServerStatus = Boolean.getBoolean(this.alwaysOnline.config.getProperty("mojang-server-status", "false"));
-
-		if (this.mojangServerStatus)
-			methodCount++;
-
-		this.xpaw = Boolean.getBoolean(this.alwaysOnline.config.getProperty("xpaw-status", "false"));
-
-		if (this.xpaw)
-			methodCount++;
+		this.alwaysOnline.nativeExecutor.log(Level.INFO, "Total check methods active: " + methodCount);
 
 		this.totalCheckMethods = methodCount;
 
-		this.messageMojangOffline = this.alwaysOnline.config.getProperty("message-mojang-offline", "§5[§2AlwaysOnline§5]§a Mojang servers are now offline!");
-		this.messageMojangOnline = this.alwaysOnline.config.getProperty("message-mojang-online", "§5[§2AlwaysOnline§5]§a Mojang servers are now online!");
+		this.messageMojangOffline = this.alwaysOnline.config.getProperty("message-mojang-offline", "&5[&2AlwaysOnline&5]&a Mojang servers are now offline!");
+		this.messageMojangOnline = this.alwaysOnline.config.getProperty("message-mojang-online", "&5[&2AlwaysOnline&5]&a Mojang servers are now online!");
 
 	}
 
@@ -65,6 +83,10 @@ public class MojangSessionCheck implements Runnable {
 
 				AlwaysOnline.MOJANG_OFFLINE_MODE = true;
 
+				this.alwaysOnline.saveState();
+
+				this.alwaysOnline.nativeExecutor.log(Level.INFO, "Mojang servers appear to be offline. Enabling mojang offline mode...");
+
 				if (!"null".equals(this.messageMojangOffline))
 					this.alwaysOnline.nativeExecutor.broadcastMessage(this.messageMojangOffline);
 
@@ -75,6 +97,10 @@ public class MojangSessionCheck implements Runnable {
 			if (AlwaysOnline.MOJANG_OFFLINE_MODE) {
 
 				AlwaysOnline.MOJANG_OFFLINE_MODE = false;
+
+				this.alwaysOnline.saveState();
+
+				this.alwaysOnline.nativeExecutor.log(Level.INFO, "Mojang servers appear to be online. Disabling mojang offline mode...");
 
 				if (!"null".equals(this.messageMojangOnline))
 					this.alwaysOnline.nativeExecutor.broadcastMessage(this.messageMojangOnline);

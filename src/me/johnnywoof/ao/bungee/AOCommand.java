@@ -6,6 +6,8 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.util.logging.Level;
+
 public class AOCommand extends Command {
 
 	private final BungeeLoader ao;
@@ -61,6 +63,14 @@ public class AOCommand extends Command {
 
 					sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GOLD + "AlwaysOnline has been reloaded!"));
 
+					break;
+
+				case "debug":
+					this.ao.alwaysOnline.printDebugInformation();
+					break;
+				case "resetcache":
+					this.ao.alwaysOnline.database.resetCache();
+					this.ao.alwaysOnline.nativeExecutor.log(Level.INFO, "Cache reset'd");
 					break;
 				default:
 

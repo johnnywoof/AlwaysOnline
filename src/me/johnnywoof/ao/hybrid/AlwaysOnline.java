@@ -1,10 +1,12 @@
 package me.johnnywoof.ao.hybrid;
 
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
 import me.johnnywoof.ao.NativeExecutor;
 import me.johnnywoof.ao.databases.Database;
 import me.johnnywoof.ao.databases.FileDatabase;
 import me.johnnywoof.ao.databases.MySQLDatabase;
+import me.johnnywoof.ao.utils.CheckMethods;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +22,7 @@ import java.util.regex.Pattern;
 
 public class AlwaysOnline {
 
-	public static boolean MOJANG_OFFLINE_MODE = false, CHECK_SESSION_STATUS = false;
+	public static boolean MOJANG_OFFLINE_MODE = false, CHECK_SESSION_STATUS = true;
 
 	public Database database = null;
 	public Properties config;
@@ -71,7 +73,8 @@ public class AlwaysOnline {
 
 		try {
 
-			Files.createDirectory(dataFolder);
+			if (Files.notExists(dataFolder))
+				Files.createDirectory(dataFolder);
 
 			//Save default configuration
 			if (Files.notExists(configFile)) {
@@ -153,7 +156,7 @@ public class AlwaysOnline {
 		this.nativeExecutor.cancelAllOurTasks();
 		this.nativeExecutor.unregisterAllListeners();
 
-		if (Boolean.getBoolean(this.config.getProperty("use_mysql", "false"))) {
+		if (Boolean.parseBoolean(this.config.getProperty("use_mysql", "false"))) {
 
 			this.nativeExecutor.log(Level.INFO, "Loading MySQL database...");
 
@@ -192,9 +195,17 @@ public class AlwaysOnline {
 
 		} catch (IOException e) {
 
-			this.nativeExecutor.log(Level.WARNING, "Failed to save state. This error is not severe. [" + e.getMessage() + "]");
+			this.nativeExecutor.log(Level.WARNING, "Failed to save state. This error can be safely ignored. [" + e.getMessage() + "]");
 
 		}
+	}
+
+	public void printDebugInformation() {
+		this.nativeExecutor.log(Level.INFO, "Session HEAD check: " + CheckMethods.directSessionServerStatus(new Gson()));
+		this.nativeExecutor.log(Level.INFO, "Help page check: " + CheckMethods.mojangHelpPage());
+		this.nativeExecutor.log(Level.INFO, "Xpaw check: " + CheckMethods.xpaw());
+		this.nativeExecutor.log(Level.INFO, "Mojang offline mode: " + MOJANG_OFFLINE_MODE);
+		this.nativeExecutor.log(Level.INFO, "Check status: " + CHECK_SESSION_STATUS);
 	}
 
 }

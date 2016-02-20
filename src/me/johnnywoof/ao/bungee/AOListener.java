@@ -2,6 +2,7 @@ package me.johnnywoof.ao.bungee;
 
 import me.johnnywoof.ao.hybrid.AlwaysOnline;
 import net.md_5.bungee.UserConnection;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
@@ -28,8 +29,8 @@ public class AOListener implements Listener {
 
 		this.bungeeLoader = bungeeLoader;
 
-		this.MOTD = this.bungeeLoader.alwaysOnline.config.getProperty("message-motd-offline",
-				"&eMojang servers are down,\\n&ebut you can still connect!");
+		this.MOTD = ChatColor.translateAlternateColorCodes('&', this.bungeeLoader.alwaysOnline.config.getProperty("message-motd-offline",
+				"&eMojang servers are down,\\n&ebut you can still connect!"));
 
 		if ("null".equals(this.MOTD))
 			this.MOTD = null;

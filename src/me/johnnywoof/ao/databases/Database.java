@@ -25,6 +25,11 @@ public interface Database {
 	void save() throws Exception;
 
 	/**
+	 * Resets the database cache. Mainly used for debugging.
+	 */
+	void resetCache();
+
+	/**
 	 * Closes the database connections/streams
 	 * This method does not save any data
 	 */

@@ -153,12 +153,20 @@ public class FileDatabase implements Database {
 	}
 
 	@Override
+	public void resetCache() {
+		this.cache.clear();
+	}
+
+	@Override
 	public void close() {
 		/*Nothing to see here*/
 		this.cache.clear();
 	}
 
 	private PlayerData loadPlayerData(String username) throws IOException {
+
+		if (Files.notExists(this.savedData))
+			Files.createFile(this.savedData);
 
 		BufferedReader br = Files.newBufferedReader(this.savedData, StandardCharsets.UTF_8);
 

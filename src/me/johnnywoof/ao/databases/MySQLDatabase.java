@@ -245,6 +245,11 @@ public class MySQLDatabase implements Database {
 	}
 
 	@Override
+	public void resetCache() {
+		this.cache.clear();
+	}
+
+	@Override
 	public void close() {
 
 		if (this.pingTaskID != -1) {

@@ -8,13 +8,16 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
+import java.util.List;
 import java.util.Map;
 
 public class CheckMethods {
+
+	private static final CookieHandler COOKIE_MANAGER = new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER);
 
 	public static boolean directSessionServerStatus(Gson gson) {
 
@@ -22,9 +25,9 @@ public class CheckMethods {
 
 		try {
 			serverResponse = sendGet("https://sessionserver.mojang.com/");
-			if (serverResponse == null)
+			if (serverResponse.isEmpty())
 				return false;
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			return false;
 		}
 
@@ -41,9 +44,9 @@ public class CheckMethods {
 
 		try {
 			serverResponse = sendGet("https://status.mojang.com/check");
-			if (serverResponse == null)
+			if (serverResponse.isEmpty())
 				return false;
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			return false;
 		}
 
@@ -65,9 +68,12 @@ public class CheckMethods {
 
 		try {
 			serverResponse = sendGet("http://xpaw.ru/mcstatus/status.json");
-			if (serverResponse == null)
+			if (serverResponse.isEmpty())
 				return false;
-		} catch (IOException e) {
+			else if (serverResponse.contains("<meta http-equiv=\"Refresh\" content=\"1; URL=http://xpaw.ru/mcstatus/\">"))
+				return xpaw();
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
 			return false;
 		}
 
@@ -76,9 +82,13 @@ public class CheckMethods {
 
 	}
 
-	private static String sendGet(String url) throws IOException {
+	private static String sendGet(String url) throws IOException, URISyntaxException {
+
 		URL obj = new URL(url);
+		URI uri = obj.toURI();
+
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		con.setDefaultUseCaches(false);
 
 		con.setRequestMethod("GET");
 		con.setRequestProperty("Accept", "application/json,text/html");
@@ -86,25 +96,41 @@ public class CheckMethods {
 		con.setRequestProperty("Connection", "close");
 		con.setRequestProperty("User-Agent", "AlwaysOnline");
 
-		int responseCode = con.getResponseCode();
+		for (Map.Entry<String, List<String>> pair : COOKIE_MANAGER.get(uri, con.getRequestProperties()).entrySet()) {
+			String key = pair.getKey();
 
-		if (responseCode == 200) {
+			for (String cookie : pair.getValue())
+				con.addRequestProperty(key, cookie);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-			String inputLine;
-			StringBuilder response = new StringBuilder();
-
-			while ((inputLine = in.readLine()) != null)
-				response.append(inputLine);
-
-			in.close();
-
-			return response.toString();
-
-		} else {
-			return null;
 		}
+
+		InputStream serverResponseStream;
+
+		try {
+			serverResponseStream = con.getInputStream();
+		} catch (IOException e) {
+			serverResponseStream = con.getErrorStream();
+		}
+
+		if (serverResponseStream == null)
+			return "";
+
+		COOKIE_MANAGER.put(uri, con.getHeaderFields());
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(serverResponseStream));
+
+		String inputLine;
+		StringBuilder response = new StringBuilder();
+
+		while ((inputLine = in.readLine()) != null)
+			response.append(inputLine);
+
+		serverResponseStream.close();
+
+		con.disconnect();
+
+		return response.toString();
+
 	}
 
 }

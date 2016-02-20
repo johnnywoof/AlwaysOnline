@@ -1,17 +1,15 @@
 package me.johnnywoof.ao.spigot;
 
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import me.johnnywoof.ao.NativeExecutor;
 import me.johnnywoof.ao.hybrid.AlwaysOnline;
-import me.johnnywoof.ao.spigot.nms.CustomAuthService;
+import me.johnnywoof.ao.spigot.authservices.NMSAuthService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -25,41 +23,20 @@ public class SpigotLoader extends JavaPlugin implements NativeExecutor {
 		this.alwaysOnline.reload();
 		//Native enable setup
 
+		if (!this.getServer().getOnlineMode()) {
+
+			this.getLogger().info("This server is running in offline mode, so this plugin will have no use on this server!");
+			this.getLogger().info("If you are running bungeecord, please put AlwaysOnline in the bungeecord plugins directory.");
+			this.getLogger().info("If you are not running bungeecord, then please remove AlwaysOnline.");
+			this.getPluginLoader().disablePlugin(this);
+			return;
+
+		}
+
 		try {
 
-			String nmsVersion = this.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-
-			String sessionServiceVariableName;
-			String sessionAuthVariableName;
-
-			switch (nmsVersion) {
-
-				case "v1_8_R3":
-					sessionServiceVariableName = "W";
-					sessionAuthVariableName = "V";
-					break;
-				default:
-					this.getLogger().severe("AlwaysOnline currently does not support spigot version " + this.getServer().getVersion());
-					this.getLogger().severe("This build of AlwaysOnline only supports minecraft versions 1.8.7, 1.8.8, and 1.8.9");
-					this.getPluginLoader().disablePlugin(this);
-					return;
-
-			}
-
-			Method method = Class.forName("net.minecraft.server." + nmsVersion + ".MinecraftServer").getMethod("getServer");
-
-			Object minecraftServer = method.invoke(null);
-
-			Field sessionServiceVariable = minecraftServer.getClass().getSuperclass().getDeclaredField(sessionServiceVariableName);
-
-			sessionServiceVariable.setAccessible(true);
-
-			Field sessionAuthVariable = minecraftServer.getClass().getSuperclass().getDeclaredField(sessionAuthVariableName);
-
-			sessionAuthVariable.setAccessible(true);
-
-			sessionServiceVariable.set(minecraftServer,
-					new CustomAuthService((YggdrasilAuthenticationService) sessionAuthVariable.get(minecraftServer), this.alwaysOnline.database));
+			this.getLogger().info("Setting up NMS authentication service...");
+			NMSAuthService.setUp(this);
 
 		} catch (Exception e) {
 
@@ -127,6 +104,17 @@ public class SpigotLoader extends JavaPlugin implements NativeExecutor {
 					//TODO Add support?
 					sender.sendMessage(ChatColor.RED + "The reload command is not supported when running " + pluginName + " with spigot.");
 
+					break;
+				case "debug":
+					if (sender instanceof Player)
+						sender.sendMessage(ChatColor.GREEN + "Check console for debug information");
+
+					this.alwaysOnline.printDebugInformation();
+
+					break;
+				case "resetcache":
+					this.alwaysOnline.database.resetCache();
+					this.getLogger().info("Cache reset'd");
 					break;
 				default:
 
@@ -198,7 +186,7 @@ public class SpigotLoader extends JavaPlugin implements NativeExecutor {
 
 	@Override
 	public void broadcastMessage(String message) {
-		this.getServer().broadcastMessage(message);
+		this.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
 	}
 
 	@Override

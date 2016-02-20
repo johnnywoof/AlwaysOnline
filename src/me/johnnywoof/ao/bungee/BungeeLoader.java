@@ -2,6 +2,7 @@ package me.johnnywoof.ao.bungee;
 
 import me.johnnywoof.ao.NativeExecutor;
 import me.johnnywoof.ao.hybrid.AlwaysOnline;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -17,6 +18,7 @@ public class BungeeLoader extends Plugin implements NativeExecutor {
 	public void onEnable() {
 		this.alwaysOnline.reload();
 		//Execute native setup
+		this.getProxy().getPluginManager().registerCommand(this, new AOCommand(this));
 	}
 
 	@Override
@@ -66,7 +68,7 @@ public class BungeeLoader extends Plugin implements NativeExecutor {
 
 	@Override
 	public void broadcastMessage(String message) {
-		this.getProxy().broadcast(TextComponent.fromLegacyText(message));
+		this.getProxy().broadcast(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message)));
 	}
 
 	@Override
