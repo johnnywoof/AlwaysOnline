@@ -77,8 +77,7 @@ public class CheckMethods {
 			return false;
 		}
 
-		//TODO Use proper json
-		return serverResponse.contains("{\"session\":{\"status\":\"up\",\"title\":\"Online\"}");
+		return new JsonParser().parse(serverResponse).getAsJsonObject().getAsJsonObject("report").getAsJsonObject("session").get("title").equals("Online")
 
 	}
 
