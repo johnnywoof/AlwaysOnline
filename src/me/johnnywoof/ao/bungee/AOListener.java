@@ -135,13 +135,17 @@ public class AOListener implements Listener {
 
 				//Reflection
 
-				Field sf = handler.getClass().getDeclaredField("uniqueId");
-				sf.setAccessible(true);
-				sf.set(handler, uuid);
+				try {
+					Field sf = handler.getClass().getDeclaredField("uniqueId");
+					sf.setAccessible(true);
+					sf.set(handler, uuid);
 
-				sf = handler.getClass().getDeclaredField("offlineId");
-				sf.setAccessible(true);
-				sf.set(handler, uuid);
+					sf = handler.getClass().getDeclaredField("offlineId");
+					sf.setAccessible(true);
+					sf.set(handler, uuid);
+				} catch(NullPointerException e) {
+					this.bungeeLoader.getLogger().info("It seems you're either using an outdated version of bungee, or ProtocolSupport. Skipping UUID support.");
+				}
 
 				Collection<String> g = this.bungeeLoader.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getName());
 				g.addAll(this.bungeeLoader.getProxy().getConfigurationAdapter().getGroups(event.getPlayer().getUniqueId().toString()));
@@ -153,8 +157,6 @@ public class AOListener implements Listener {
 				}
 
 				this.bungeeLoader.getLogger().info(event.getPlayer().getName() + " successfully logged in while mojang servers were offline!");
-
-				//ProxyServer.getInstance().getLogger().info("Overriding uuid for " + event.getPlayer().getName() + " to " + uuid.toString() + "! New uuid is " + event.getPlayer().getUniqueId().toString());
 
 			} catch (Exception e) {//Play it safe, if an error deny the player
 
