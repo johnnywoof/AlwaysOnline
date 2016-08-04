@@ -67,9 +67,13 @@ public class NMSAuthService extends YggdrasilMinecraftSessionService {
 				sessionServiceVariableName = "V";
 				sessionAuthVariableName = "U";
 				break;
+			case "v1_10_R1":
+				sessionServiceVariableName = "V";
+				sessionAuthVariableName = "U";
+				break;
 			default:
 				spigotLoader.getLogger().severe("AlwaysOnline currently does not support spigot version " + spigotLoader.getServer().getVersion());
-				spigotLoader.getLogger().severe("This build of AlwaysOnline only supports minecraft versions 1.8 and 1.9");
+				spigotLoader.getLogger().severe("This build of AlwaysOnline only supports minecraft versions 1.8, 1.9, and 1.10");
 				spigotLoader.getPluginLoader().disablePlugin(spigotLoader);
 				return;
 
