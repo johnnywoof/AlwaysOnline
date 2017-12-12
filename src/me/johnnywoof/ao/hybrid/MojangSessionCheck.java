@@ -25,13 +25,6 @@ public class MojangSessionCheck implements Runnable {
 		if (this.mojangServerStatus)
 			methodCount++;
 
-		this.xpaw = Boolean.parseBoolean(this.alwaysOnline.config.getProperty("xpaw-status", "false"));
-
-		this.alwaysOnline.nativeExecutor.log(Level.INFO, "Xpaw check: " + this.xpaw);
-
-		if (this.xpaw)
-			methodCount++;
-
 		boolean headCheck = Boolean.parseBoolean(this.alwaysOnline.config.getProperty("http-head-session-server", "false"));
 
 		if (methodCount == 0 && !headCheck) {
